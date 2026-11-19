@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "A": {
+      "item": "minecraft:hopper"
+    },
+    "X": {
+      "item": "ultraloot:quantity_card_2"
+    },
+    "C": {
+      "item": "ultraloot:refined_circuit"
+    }
+  },
+  "pattern": [
+    "MAM",
+    "AXA",
+    "MCM"
+  ],
+  "result": {
+    "id": "ultraloot:quantity_card_3",
+    "count": 1
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "loot_table": "ultraloot:generator/resource_cache",
+  "context": "chest",
+  "category": "ultraloot",
+  "icon": "minecraft:raw_iron",
+  "min_tier": 2,
+  "energy_multiplier": 1.5
+}

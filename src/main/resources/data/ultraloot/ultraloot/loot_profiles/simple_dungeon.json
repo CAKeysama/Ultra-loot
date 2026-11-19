@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/simple_dungeon",
+  "context": "chest",
+  "category": "overworld",
+  "icon": "minecraft:mossy_cobblestone",
+  "min_tier": 1,
+  "energy_multiplier": 1.0
+}

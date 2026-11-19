@@ -1,0 +1,11 @@
+{
+  "parent": "ultraloot:block/mob_loot_generator_base_t4",
+  "textures": {
+    "particle": "ultraloot:block/mob_loot_generator_t4_side",
+    "front": "ultraloot:block/mob_loot_generator_t4_front_on",
+    "side": "ultraloot:block/mob_loot_generator_t4_side",
+    "top": "ultraloot:block/mob_loot_generator_t4_top",
+    "bottom": "ultraloot:block/mob_loot_generator_bottom",
+    "crystal": "ultraloot:block/machine_crystal_on"
+  }
+}

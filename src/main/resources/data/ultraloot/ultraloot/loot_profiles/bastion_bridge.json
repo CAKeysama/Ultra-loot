@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/bastion_bridge",
+  "context": "chest",
+  "category": "nether",
+  "icon": "minecraft:polished_blackstone_bricks",
+  "min_tier": 3,
+  "energy_multiplier": 2.2
+}

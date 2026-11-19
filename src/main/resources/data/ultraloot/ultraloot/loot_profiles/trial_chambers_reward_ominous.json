@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/trial_chambers/reward_ominous",
+  "context": "chest",
+  "category": "trial_chambers",
+  "icon": "minecraft:ominous_trial_key",
+  "min_tier": 4,
+  "energy_multiplier": 4.0
+}

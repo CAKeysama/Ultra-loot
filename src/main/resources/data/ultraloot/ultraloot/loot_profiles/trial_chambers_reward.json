@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/trial_chambers/reward",
+  "context": "chest",
+  "category": "trial_chambers",
+  "icon": "minecraft:vault",
+  "min_tier": 3,
+  "energy_multiplier": 2.5
+}

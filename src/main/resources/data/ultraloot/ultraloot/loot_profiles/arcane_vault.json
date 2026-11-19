@@ -1,0 +1,8 @@
+{
+  "loot_table": "ultraloot:generator/arcane_vault",
+  "context": "chest",
+  "category": "ultraloot",
+  "icon": "minecraft:enchanted_book",
+  "min_tier": 3,
+  "energy_multiplier": 2.8
+}

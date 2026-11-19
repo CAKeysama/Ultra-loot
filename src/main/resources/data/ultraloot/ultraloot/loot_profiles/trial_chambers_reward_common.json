@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/trial_chambers/reward_common",
+  "context": "chest",
+  "category": "trial_chambers",
+  "icon": "minecraft:wind_charge",
+  "min_tier": 3,
+  "energy_multiplier": 1.8
+}

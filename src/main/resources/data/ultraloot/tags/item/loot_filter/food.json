@@ -1,0 +1,39 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:foods",
+      "required": false
+    },
+    {
+      "id": "#c:seeds",
+      "required": false
+    },
+    {
+      "id": "#c:crops",
+      "required": false
+    },
+    "minecraft:wheat",
+    "minecraft:wheat_seeds",
+    "minecraft:beetroot_seeds",
+    "minecraft:melon_seeds",
+    "minecraft:pumpkin_seeds",
+    "minecraft:torchflower_seeds",
+    "minecraft:pitcher_pod",
+    "minecraft:sugar",
+    "minecraft:sugar_cane",
+    "minecraft:egg",
+    "minecraft:cocoa_beans",
+    "minecraft:pumpkin",
+    "minecraft:melon",
+    "minecraft:cake",
+    "minecraft:milk_bucket",
+    "minecraft:nether_wart",
+    "minecraft:hay_block",
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom",
+    "minecraft:bamboo",
+    "minecraft:cactus",
+    "minecraft:honeycomb"
+  ]
+}

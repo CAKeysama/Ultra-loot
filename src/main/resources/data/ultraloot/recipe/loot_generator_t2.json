@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "E": {
+      "item": "ultraloot:enhanced_circuit"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "M": {
+      "item": "ultraloot:loot_generator_t1"
+    }
+  },
+  "pattern": [
+    "GEG",
+    "DMD",
+    "GGG"
+  ],
+  "result": {
+    "id": "ultraloot:loot_generator_t2",
+    "count": 1
+  }
+}

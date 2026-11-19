@@ -1,0 +1,26 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:tools",
+      "required": false
+    },
+    {
+      "id": "#c:armors",
+      "required": false
+    },
+    "minecraft:bow",
+    "minecraft:crossbow",
+    "minecraft:trident",
+    "minecraft:shield",
+    "minecraft:mace",
+    "minecraft:leather_horse_armor",
+    "minecraft:iron_horse_armor",
+    "minecraft:golden_horse_armor",
+    "minecraft:diamond_horse_armor",
+    "minecraft:wolf_armor",
+    "minecraft:saddle",
+    "minecraft:elytra",
+    "minecraft:turtle_helmet"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "ultraloot:speed_card_1",
+    "ultraloot:speed_card_2",
+    "ultraloot:speed_card_3",
+    "ultraloot:quantity_card_1",
+    "ultraloot:quantity_card_2",
+    "ultraloot:quantity_card_3",
+    "ultraloot:range_card_1",
+    "ultraloot:range_card_2",
+    "ultraloot:range_card_3",
+    "ultraloot:efficiency_card_1",
+    "ultraloot:efficiency_card_2",
+    "ultraloot:efficiency_card_3",
+    "ultraloot:loot_card_1",
+    "ultraloot:loot_card_2",
+    "ultraloot:loot_card_3"
+  ]
+}

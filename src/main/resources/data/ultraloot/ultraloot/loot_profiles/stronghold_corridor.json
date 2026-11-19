@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/stronghold_corridor",
+  "context": "chest",
+  "category": "stronghold",
+  "icon": "minecraft:stone_bricks",
+  "min_tier": 3,
+  "energy_multiplier": 1.8
+}

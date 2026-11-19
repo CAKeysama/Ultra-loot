@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_dragon",
+    "minecraft:wither",
+    "minecraft:player",
+    "minecraft:armor_stand",
+    "minecraft:giant",
+    "minecraft:iron_golem",
+    "minecraft:snow_golem",
+    "minecraft:villager",
+    "minecraft:wandering_trader",
+    {
+      "id": "#c:bosses",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "L": {
+      "item": "ultraloot:logic_circuit"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "GRG",
+    "LDL",
+    "GRG"
+  ],
+  "result": {
+    "id": "ultraloot:enhanced_circuit",
+    "count": 1
+  }
+}

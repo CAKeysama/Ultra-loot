@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/bastion_treasure",
+  "context": "chest",
+  "category": "nether",
+  "icon": "minecraft:netherite_scrap",
+  "min_tier": 4,
+  "energy_multiplier": 3.0
+}

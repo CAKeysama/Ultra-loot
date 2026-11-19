@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "L": {
+      "item": "ultraloot:logic_circuit"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "F": {
+      "item": "ultraloot:machine_frame"
+    },
+    "K": {
+      "item": "ultraloot:loot_core"
+    }
+  },
+  "pattern": [
+    "ILI",
+    "CFC",
+    "IKI"
+  ],
+  "result": {
+    "id": "ultraloot:loot_generator_t1",
+    "count": 1
+  }
+}

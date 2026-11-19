@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/trial_chambers/intersection_barrel",
+  "context": "chest",
+  "category": "trial_chambers",
+  "icon": "minecraft:barrel",
+  "min_tier": 2,
+  "energy_multiplier": 1.4
+}

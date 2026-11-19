@@ -1,0 +1,244 @@
+{
+  "values": {
+    "minecraft:chicken": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:cow": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:mooshroom": {
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:pig": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:sheep": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:rabbit": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:goat": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:horse": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:donkey": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:mule": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:llama": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:trader_llama": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:hoglin": {
+      "xp_cost": 10,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:strider": {
+      "xp_cost": 6,
+      "energy_multiplier": 0.9
+    },
+    "minecraft:panda": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:polar_bear": {
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:turtle": {
+      "xp_cost": 8,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:parrot": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:cat": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:ocelot": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:fox": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:cod": {
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
+    },
+    "minecraft:salmon": {
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
+    },
+    "minecraft:tropical_fish": {
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
+    },
+    "minecraft:pufferfish": {
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:dolphin": {
+      "xp_cost": 6,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:squid": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
+    },
+    "minecraft:glow_squid": {
+      "xp_cost": 6,
+      "energy_multiplier": 0.9
+    },
+    "minecraft:drowned": {
+      "xp_cost": 8,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:guardian": {
+      "xp_cost": 20,
+      "energy_multiplier": 1.6
+    },
+    "minecraft:elder_guardian": {
+      "xp_cost": 120,
+      "energy_multiplier": 4.0
+    },
+    "minecraft:zombie": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:husk": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:zombie_villager": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:zombie_horse": {
+      "xp_cost": 6,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:skeleton": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:stray": {
+      "xp_cost": 8,
+      "energy_multiplier": 1.1
+    },
+    "minecraft:bogged": {
+      "xp_cost": 8,
+      "energy_multiplier": 1.1
+    },
+    "minecraft:skeleton_horse": {
+      "xp_cost": 6,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:spider": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:cave_spider": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:creeper": {
+      "xp_cost": 8,
+      "energy_multiplier": 1.1
+    },
+    "minecraft:slime": {
+      "xp_cost": 6,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:silverfish": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:phantom": {
+      "xp_cost": 10,
+      "energy_multiplier": 1.2
+    },
+    "minecraft:witch": {
+      "xp_cost": 15,
+      "energy_multiplier": 1.4
+    },
+    "minecraft:vindicator": {
+      "xp_cost": 14,
+      "energy_multiplier": 1.3
+    },
+    "minecraft:evoker": {
+      "xp_cost": 60,
+      "energy_multiplier": 3.0
+    },
+    "minecraft:ravager": {
+      "xp_cost": 30,
+      "energy_multiplier": 2.0
+    },
+    "minecraft:breeze": {
+      "xp_cost": 30,
+      "energy_multiplier": 2.0
+    },
+    "minecraft:warden": {
+      "xp_cost": 250,
+      "energy_multiplier": 6.0
+    },
+    "minecraft:blaze": {
+      "xp_cost": 20,
+      "energy_multiplier": 1.5
+    },
+    "minecraft:ghast": {
+      "xp_cost": 24,
+      "energy_multiplier": 1.6
+    },
+    "minecraft:magma_cube": {
+      "xp_cost": 10,
+      "energy_multiplier": 1.2
+    },
+    "minecraft:wither_skeleton": {
+      "xp_cost": 40,
+      "energy_multiplier": 2.5
+    },
+    "minecraft:zombified_piglin": {
+      "xp_cost": 10,
+      "energy_multiplier": 1.2
+    },
+    "minecraft:zoglin": {
+      "xp_cost": 10,
+      "energy_multiplier": 1.0
+    },
+    "minecraft:enderman": {
+      "xp_cost": 18,
+      "energy_multiplier": 1.5
+    },
+    "minecraft:endermite": {
+      "xp_cost": 4,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:shulker": {
+      "xp_cost": 50,
+      "energy_multiplier": 2.5
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ultraloot:blank_card"
+    },
+    [
+      {
+        "item": "minecraft:soul_sand"
+      },
+      {
+        "item": "minecraft:soul_soil"
+      }
+    ],
+    {
+      "item": "minecraft:bone"
+    }
+  ],
+  "result": {
+    "id": "ultraloot:blank_mob_card",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "A": {
+      "item": "minecraft:gold_ingot"
+    },
+    "X": {
+      "item": "ultraloot:efficiency_card_1"
+    },
+    "C": {
+      "item": "ultraloot:enhanced_circuit"
+    }
+  },
+  "pattern": [
+    "MAM",
+    "AXA",
+    "MCM"
+  ],
+  "result": {
+    "id": "ultraloot:efficiency_card_2",
+    "count": 1
+  }
+}

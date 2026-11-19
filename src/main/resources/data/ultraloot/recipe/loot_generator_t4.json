@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:shulker_shell"
+    },
+    "S": {
+      "item": "ultraloot:stellar_circuit"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    },
+    "M": {
+      "item": "ultraloot:loot_generator_t3"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    "CSC",
+    "DMD",
+    "CNC"
+  ],
+  "result": {
+    "id": "ultraloot:loot_generator_t4",
+    "count": 1
+  }
+}

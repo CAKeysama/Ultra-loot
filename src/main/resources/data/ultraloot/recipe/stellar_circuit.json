@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "B": {
+      "item": "minecraft:dragon_breath"
+    },
+    "E": {
+      "item": "minecraft:end_crystal"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    },
+    "R": {
+      "item": "ultraloot:refined_circuit"
+    }
+  },
+  "pattern": [
+    "DBD",
+    "ENE",
+    "DRD"
+  ],
+  "result": {
+    "id": "ultraloot:stellar_circuit",
+    "count": 1
+  }
+}

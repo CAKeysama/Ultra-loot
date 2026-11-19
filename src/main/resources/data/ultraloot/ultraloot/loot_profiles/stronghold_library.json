@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/stronghold_library",
+  "context": "chest",
+  "category": "stronghold",
+  "icon": "minecraft:bookshelf",
+  "min_tier": 3,
+  "energy_multiplier": 2.2
+}

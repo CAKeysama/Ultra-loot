@@ -1,0 +1,10 @@
+{
+  "parent": "ultraloot:block/mob_loot_generator_base",
+  "textures": {
+    "particle": "ultraloot:block/mob_loot_generator_t1_side",
+    "front": "ultraloot:block/mob_loot_generator_t1_front_on",
+    "side": "ultraloot:block/mob_loot_generator_t1_side",
+    "top": "ultraloot:block/mob_loot_generator_t1_top",
+    "bottom": "ultraloot:block/mob_loot_generator_bottom"
+  }
+}

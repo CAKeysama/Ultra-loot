@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ultraloot:mob_loot_generator_t4"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "ultraloot:blocks/mob_loot_generator_t4"
+}

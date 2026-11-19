@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/trial_chambers/reward_rare",
+  "context": "chest",
+  "category": "trial_chambers",
+  "icon": "minecraft:diamond_chestplate",
+  "min_tier": 3,
+  "energy_multiplier": 2.5
+}

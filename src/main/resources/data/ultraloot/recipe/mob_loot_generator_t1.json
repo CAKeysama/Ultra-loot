@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "L": {
+      "item": "ultraloot:logic_circuit"
+    },
+    "W": {
+      "item": "minecraft:iron_sword"
+    },
+    "F": {
+      "item": "ultraloot:machine_frame"
+    },
+    "K": {
+      "item": "ultraloot:soul_core"
+    }
+  },
+  "pattern": [
+    "ILI",
+    "WFW",
+    "IKI"
+  ],
+  "result": {
+    "id": "ultraloot:mob_loot_generator_t1",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "R": {
+      "item": "ultraloot:refined_circuit"
+    },
+    "M": {
+      "item": "ultraloot:mob_loot_generator_t2"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "pattern": [
+    "ERE",
+    "EME",
+    "ENE"
+  ],
+  "result": {
+    "id": "ultraloot:mob_loot_generator_t3",
+    "count": 1
+  }
+}

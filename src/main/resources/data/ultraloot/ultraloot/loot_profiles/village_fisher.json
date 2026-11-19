@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/village/village_fisher",
+  "context": "chest",
+  "category": "village",
+  "icon": "minecraft:barrel",
+  "min_tier": 1,
+  "energy_multiplier": 0.8
+}

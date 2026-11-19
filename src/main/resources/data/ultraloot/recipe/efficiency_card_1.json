@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "B": {
+      "item": "ultraloot:blank_card"
+    }
+  },
+  "pattern": [
+    "CLC",
+    "LBL",
+    "CLC"
+  ],
+  "result": {
+    "id": "ultraloot:efficiency_card_1",
+    "count": 1
+  }
+}

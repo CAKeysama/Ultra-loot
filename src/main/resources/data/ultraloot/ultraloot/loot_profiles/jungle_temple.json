@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/jungle_temple",
+  "context": "chest",
+  "category": "overworld",
+  "icon": "minecraft:mossy_cobblestone",
+  "min_tier": 2,
+  "energy_multiplier": 1.4
+}

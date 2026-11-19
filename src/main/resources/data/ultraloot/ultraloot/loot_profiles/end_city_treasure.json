@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/end_city_treasure",
+  "context": "chest",
+  "category": "end",
+  "icon": "minecraft:purpur_block",
+  "min_tier": 4,
+  "energy_multiplier": 3.5
+}

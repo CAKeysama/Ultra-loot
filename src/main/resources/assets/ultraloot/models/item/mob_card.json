@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ultraloot:item/mob_card",
+    "layer1": "ultraloot:item/mob_card_overlay"
+  }
+}

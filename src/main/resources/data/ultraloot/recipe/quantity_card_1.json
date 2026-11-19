@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "C": {
+      "item": "minecraft:chest"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "ultraloot:blank_card"
+    }
+  },
+  "pattern": [
+    " H ",
+    "CBC",
+    " R "
+  ],
+  "result": {
+    "id": "ultraloot:quantity_card_1",
+    "count": 1
+  }
+}

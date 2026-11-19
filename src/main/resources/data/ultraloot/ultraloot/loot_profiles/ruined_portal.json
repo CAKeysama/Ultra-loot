@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/ruined_portal",
+  "context": "chest",
+  "category": "overworld",
+  "icon": "minecraft:crying_obsidian",
+  "min_tier": 2,
+  "energy_multiplier": 1.3
+}

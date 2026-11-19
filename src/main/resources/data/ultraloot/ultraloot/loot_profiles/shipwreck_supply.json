@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/shipwreck_supply",
+  "context": "chest",
+  "category": "ocean",
+  "icon": "minecraft:oak_boat",
+  "min_tier": 1,
+  "energy_multiplier": 0.9
+}

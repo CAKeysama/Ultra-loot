@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/ancient_city",
+  "context": "chest",
+  "category": "overworld",
+  "icon": "minecraft:sculk_catalyst",
+  "min_tier": 4,
+  "energy_multiplier": 3.5
+}

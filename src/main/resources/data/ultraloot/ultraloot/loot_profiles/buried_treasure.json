@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/buried_treasure",
+  "context": "chest",
+  "category": "ocean",
+  "icon": "minecraft:heart_of_the_sea",
+  "min_tier": 2,
+  "energy_multiplier": 2.0
+}

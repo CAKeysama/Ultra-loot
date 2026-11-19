@@ -1,0 +1,1159 @@
+{
+  "commands": {
+    "unit": "./gradlew test",
+    "gametest": "./gradlew runGameTestServer"
+  },
+  "summary": {
+    "unit": {
+      "pass": 116,
+      "fail": 0,
+      "not_run": 0
+    },
+    "gametest": {
+      "pass": 31,
+      "fail": 0,
+      "not_run": 0
+    },
+    "manual": {
+      "pass": 0,
+      "fail": 0,
+      "not_run": 13
+    }
+  },
+  "bugs": [
+    {
+      "id": "BUG-01",
+      "status": "fixed",
+      "location": "machine/SideConfiguration#fromArray",
+      "description": "Out-of-range persisted side ordinal became NONE instead of the family default"
+    },
+    {
+      "id": "BUG-02",
+      "status": "fixed",
+      "location": "upgrade/UpgradeModifiers#energyPerOperation",
+      "description": "Math.ceil on floating-point noise added 1 FE to exact costs (881 instead of 880)"
+    }
+  ],
+  "tests": [
+    {
+      "id": "unit.MachineEnergyStorageTest.deserializeClampsCorruptValues",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.deserializeIgnoresWrongTagType",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.receiveSimulateDoesNotChangeState",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.consumeIsAllOrNothing",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.externalExtractionIsImpossible",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.receiveStopsAtCapacity",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.receiveIsRateLimitedPerCall",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.hasComparesAgainstStoredEnergy",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.receiveRejectsZeroAndNegative",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.consumeRejectsNegativeAndAcceptsZero",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.setEnergyClamps",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.inputViewIsInsertOnly",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.nbtRoundTrip",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.noVanillaFluidIsTaggedAsExperience",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": "c:experience is empty in NeoForge 21.1; conversion math tested via tag-check override"
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.neverExposesOrDrainsFluid",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.fillRespectsTankRateLimit",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.lessThanOnePointIsRejected",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.rejectsEmptyStack",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.fillStopsAtTankSpace",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.convertsWholePointsOnly",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.simulateDoesNotChangeTank",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.tankCapacityReportsFreeSpaceInMillibuckets",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceFluidAdapterTest.rejectsWaterAndLava",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceMathTest.knownVanillaTotals",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceMathTest.negativeLevelIsZero",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceMathTest.matchesSumOfVanillaLevelCosts",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceMathTest.capsuleHoldsExactlyThirtyLevels",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.receiveIsRateLimited",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.receiveSimulateDoesNotChangeState",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.consumeIsAllOrNothing",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.extractionIsNeverAllowed",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.receiveNeverExceedsCapacity",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.internalInsertBypassesRateLimitButNotCapacity",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.receiveRejectsZeroAndNegative",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.consumeRejectsNegative",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.capacityMustBePositive",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.ExperienceTankTest.setExperienceClamps",
+      "area": "experience",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.partialFitIsRejectedEntirely",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.commitReturnsWhatATargetUnexpectedlyRejects",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.roundRobinDistributesOneStackPerTarget",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.mergingAllowsFittingIntoAnInventoryWithoutFreeSlots",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.largeBatchConservesItemCount",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.emptyBatchAlwaysSucceedsAndKeepsCursor",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.itemValidityIsRespected",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.planDoesNotMutateInputStacks",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.fullTargetsAreSkipped",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.freeSlotsCountsEmptySlots",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.slotLimitsAreRespected",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.nonStackablesNeedOneSlotEach",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.stackSpillsOverToTheNextTarget",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.allOrNothingWhenEverythingDoesNotFit",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.startIndexIsWrapped",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.commitReroutesRejectedItemsToOtherTargets",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.partialStacksAreMergedBeforeUsingEmptySlots",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.roundRobinCursorContinuesAcrossOperations",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.planDoesNotTouchTargetsUntilCommit",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.noTargetsMeansNoPlan",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TransactionalInserterTest.maxStackSizeIsRespected",
+      "area": "inventory",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.foodFilterUsesFoodComponent",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.autoChestProfileIdFormat",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": "asserts auto profiles use Balance.autoProfileMinTier / autoProfileEnergyMultiplier"
+    },
+    {
+      "id": "unit.LootModelTest.lootResultCountsItems",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.definitionDefaults",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.ordinalFallbacks",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.statisticsAccumulateAndRoundTrip",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.filterAllKeepsEverything",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.definitionFullForm",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.mobSimulationDataCodec",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.onlyRunningIsWorking",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.definitionRejectsInvalidValues",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.LootModelTest.equipmentFilterUsesDurability",
+      "area": "loot",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[1] north",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[2] south",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[3] west",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[4] east",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.rotatingTheMachineRotatesItsSides",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.leftAndRightForEveryFacing",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.byOrdinalFallsBackToFront",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.setReportsChanges",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.resetRestoresDefaults",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.[1] LOOT_GENERATOR",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.[2] MOB_LOOT_GENERATOR",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.Out-of-range persisted ordinals fall back to the family default, not to NONE ",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.lootGeneratorDefaults",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.anyFindsConfiguredModes",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.fromArrayRejectsModesNotAllowedForTheFamily",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.cycleOnlyTouchesOneSide",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.mobLootGeneratorDefaults",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.setRejectsModesOfTheOtherFamily",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.fromArrayWithWrongLengthResetsToDefaults",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.getByWorldDirectionUsesFacing",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.cycleOrderAndWrapForLootGenerator",
+      "area": "side-config",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.insertOfWrongCategoryIsRejected",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.levelsIgnoreCardForcedIntoTheWrongSlot",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.slotLimitIsOneCard",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.hasOneSlotPerCategory",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.rejectsNonCards",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.eachSlotOnlyAcceptsItsCategory",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.levelsReflectInstalledCards",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeInventoryTest.nbtRoundTrip",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.energyCostIsAlwaysAtLeastOneFe",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.invariantsHoldForEveryCombination",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.ticksNeverDropBelowMinimum",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.upgradeLevelsValidation",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.[1] T1",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.[2] T2",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.[3] T3",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.[4] T4",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.lootGeneratorWithoutCards",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.speedCardLevels",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.lootCardLevels",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.Exact multiples are not rounded up by floating point noise: 880 FE for Range I at 800 FE ",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.energyFloorPreventsNearZeroCost",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.rangeCardExtendsLootRangeButOnlyOrbRadiusOnMobGenerator",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.quantityCardLevels",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.efficiencyCardLevels",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.UpgradeModifiersTest.allCardsAtLevelThreeCombine",
+      "area": "upgrades",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorFillsChestInRange",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorRespectsRange",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorSkipsFullChest",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorKeepsEnergyWhenTargetsFull",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorWithoutTargets",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorRoundRobin",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorHonoursFaceConfiguration",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorStopsUsingFaceSetToNone",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorCountsDoubleChestOnce",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorStorageOnlyModeUsesChests",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorNeedsEnergy",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorProfileValidation",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorCapabilities",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorPersistence",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorFishingProfileFillsChest",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": "asserts no entity at all (incl. FishingHook) is added to the world"
+    },
+    {
+      "id": "gametest.autoProfilesAreGatedByTierAndCost",
+      "area": "loot-profiles",
+      "type": "gametest",
+      "status": "pass",
+      "notes": "currently passes as a logged skip: every vanilla chests/* table is covered by a shipped ultraloot profile, so no auto profile exists"
+    },
+    {
+      "id": "gametest.explorationMapTablesAreNeverProfiles",
+      "area": "loot-profiles",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorCannotSelectLockedProfile",
+      "area": "loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.magmaCubeSimulationDropsMagmaCream",
+      "area": "mob-simulation",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.slimeSimulationDropsSlimeBalls",
+      "area": "mob-simulation",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorProducesDropsWithoutSpawning",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorPausesWhenOutputFull",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorExportsThroughItemOutputFace",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorDoesNotExportThroughOtherFaces",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorNeedsXp",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorNeedsCard",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorDrainsExperienceBottles",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorRangeCardCollectsOrbs",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": "orb motion zeroed: vanilla random spawn motion made the test flaky (1 failure in 5 runs)"
+    },
+    {
+      "id": "gametest.mobGeneratorIgnoresOrbsWithoutRangeCard",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorCapabilities",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorPersistence",
+      "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "manual.gui-layout",
+      "area": "gui",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Both machines, all tiers: tabs, widgets, tooltips, bars match numbers"
+    },
+    {
+      "id": "manual.gui-upgrade-slots",
+      "area": "gui",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Shift-click cards, duplicate category refused, stats update live"
+    },
+    {
+      "id": "manual.gui-side-config",
+      "area": "gui",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Cycle modes, colours, survives rotation and chunk reload"
+    },
+    {
+      "id": "manual.gui-profile-selector",
+      "area": "gui",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Scrolling, auto profiles, min-tier lock, persists after relog"
+    },
+    {
+      "id": "manual.gui-scan-list",
+      "area": "gui",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "States FULL/NOT_STORAGE/FACE_DISABLED shown, Rescan works"
+    },
+    {
+      "id": "manual.gui-filters",
+      "area": "gui",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Disabled without Loot Card, reset to ALL when card removed"
+    },
+    {
+      "id": "manual.render-active-state",
+      "area": "rendering",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Front lights while running, ~2 s linger, no flicker"
+    },
+    {
+      "id": "manual.mob-card-imprint",
+      "area": "mob",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Imprint vanilla/modded mob, boss refused with message, tint"
+    },
+    {
+      "id": "manual.xp-capsule",
+      "area": "experience",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Store/release, 1395 cap, drains in XP slot, empty capsule extractable"
+    },
+    {
+      "id": "manual.break-drops",
+      "area": "machine",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "All inventories drop, stored XP drops as orbs"
+    },
+    {
+      "id": "manual.multiplayer-sync",
+      "area": "network",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Two players see same values; invalid C2S rejected"
+    },
+    {
+      "id": "manual.compat-energy-fluid-pipes",
+      "area": "compat",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "Modded FE cable rate, c:experience fluid fills tank, pipes on output faces only"
+    },
+    {
+      "id": "manual.performance-50-machines",
+      "area": "performance",
+      "type": "manual",
+      "status": "not_run",
+      "notes": "TPS/profiler with 50 Range III Loot Generators"
+    }
+  ]
+}

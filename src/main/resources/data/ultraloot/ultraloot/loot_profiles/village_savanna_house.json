@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/village/village_savanna_house",
+  "context": "chest",
+  "category": "village",
+  "icon": "minecraft:acacia_log",
+  "min_tier": 1,
+  "energy_multiplier": 0.8
+}

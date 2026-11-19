@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:furnace",
+    "minecraft:blast_furnace",
+    "minecraft:smoker",
+    "minecraft:hopper",
+    "minecraft:brewing_stand",
+    "minecraft:dispenser",
+    "minecraft:dropper",
+    "minecraft:crafter",
+    "minecraft:jukebox",
+    "minecraft:chiseled_bookshelf",
+    "minecraft:lectern",
+    "minecraft:decorated_pot",
+    "minecraft:beacon",
+    "minecraft:campfire",
+    "minecraft:soul_campfire"
+  ]
+}

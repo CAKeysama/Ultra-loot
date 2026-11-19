@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "A": {
+      "item": "minecraft:ender_pearl"
+    },
+    "X": {
+      "item": "ultraloot:range_card_1"
+    },
+    "C": {
+      "item": "ultraloot:enhanced_circuit"
+    }
+  },
+  "pattern": [
+    "MAM",
+    "AXA",
+    "MCM"
+  ],
+  "result": {
+    "id": "ultraloot:range_card_2",
+    "count": 1
+  }
+}

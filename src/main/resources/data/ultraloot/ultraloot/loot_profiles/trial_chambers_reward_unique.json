@@ -1,0 +1,8 @@
+{
+  "loot_table": "minecraft:chests/trial_chambers/reward_unique",
+  "context": "chest",
+  "category": "trial_chambers",
+  "icon": "minecraft:trident",
+  "min_tier": 4,
+  "energy_multiplier": 3.5
+}

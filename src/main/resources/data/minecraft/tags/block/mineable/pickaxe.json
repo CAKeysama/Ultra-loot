@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "ultraloot:loot_generator_t1",
+    "ultraloot:loot_generator_t2",
+    "ultraloot:loot_generator_t3",
+    "ultraloot:loot_generator_t4",
+    "ultraloot:mob_loot_generator_t1",
+    "ultraloot:mob_loot_generator_t2",
+    "ultraloot:mob_loot_generator_t3",
+    "ultraloot:mob_loot_generator_t4"
+  ]
+}

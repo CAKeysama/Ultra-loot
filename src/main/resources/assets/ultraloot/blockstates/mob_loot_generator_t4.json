@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=north": {
+      "model": "ultraloot:block/mob_loot_generator_t4"
+    },
+    "active=false,facing=east": {
+      "model": "ultraloot:block/mob_loot_generator_t4",
+      "y": 90
+    },
+    "active=false,facing=south": {
+      "model": "ultraloot:block/mob_loot_generator_t4",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "ultraloot:block/mob_loot_generator_t4",
+      "y": 270
+    },
+    "active=true,facing=north": {
+      "model": "ultraloot:block/mob_loot_generator_t4_on"
+    },
+    "active=true,facing=east": {
+      "model": "ultraloot:block/mob_loot_generator_t4_on",
+      "y": 90
+    },
+    "active=true,facing=south": {
+      "model": "ultraloot:block/mob_loot_generator_t4_on",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "ultraloot:block/mob_loot_generator_t4_on",
+      "y": 270
+    }
+  }
+}
