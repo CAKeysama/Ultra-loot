@@ -37,6 +37,9 @@ Last update: 2026-11-22 (session 3: remediation, 0.2.0)
 | Docs (ARCHITECTURE, CHANGELOG 0.2.0, MACHINES, CONFIGURATION, DATAPACKS, KNOWN_LIMITATIONS, TEST_PLAN, TEST_REPORT, tests.json, README, AUDIT) | COMPLETED |
 | Client GUI + Mekanism validation (computer use) | DONE (partial): checks 18, 19 pass; 14-16 partial; GUI tab clicks blocked (mouse input did not reach the game) |
 | Independent review, clean build, final report | COMPLETED: review P2/P3 fixes applied; clean build, 173 unit, 55 GameTests green |
+| GitHub release v0.2.0 (pre-release, JAR attached) | COMPLETED (owner request) |
+| CurseForge page: logo, pixel-art description (`tools/generate_curseforge_art.py`, `curseforge/art/`) | COMPLETED |
+| CurseForge project 1824987 created; file "Ultra Loot 0.2.0" (Release, NeoForge, 1.21.1, Java 21) uploaded | DONE, waiting for moderator approval |
 
 ## Environment
 - JDK 21 found through JAVA_HOME (`C:\Program Files\Java\jdk-21`, 21.0.9). `~/.jdks` no longer exists; the
@@ -49,10 +52,14 @@ Last update: 2026-11-22 (session 3: remediation, 0.2.0)
   in-game checks with Mekanism 10.7.19 (see `docs/TEST_REPORT.md`).
 
 ## Git
-- Nothing committed or pushed. All work is uncommitted in the working tree.
+- On `main`, pushed to https://github.com/CAKeysama/Ultra-loot (owner request): 87e991e (0.2.0), 4970713
+  (CurseForge prep), 3ef03b4 (pixel-art description). Tag `v0.2.0`. Licence stays All Rights Reserved.
+- The CurseForge description loads its images from `raw.githubusercontent.com/.../main/curseforge/art/`:
+  keep those files on `main` (moving or renaming them breaks the page).
 
 ## Next exact steps
-1. Owner decides on commit / branch / licence.
+1. Wait for CurseForge moderation of project 1824987; optionally add `curseforge/screenshots/` to its gallery
+   (Media tab).
 2. Manual GUI clicks that could not be automated: tabs, upgrade slots, side configuration, profile selector,
    scan list, filters, recipe book (TEST_PLAN 1-6, 17), plus hoppers on the Card Restorer.
 3. Dedicated server with two players; playtest the balance numbers (all still placeholders until played).
