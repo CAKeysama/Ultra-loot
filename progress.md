@@ -45,7 +45,7 @@ Last update: 2026-11-22 (session 3: remediation, 0.2.0)
 ## Builds / tests (final)
 - 0.1.1 (2026-11-20): clean build green, unit 129/129, GameTests 33/33. Details: `docs/TEST_REPORT.md`.
 - 0.2.0 (2026-11-22): `./gradlew clean build --no-build-cache` green -> `build/libs/ultraloot-0.2.0.jar`
-  (462,924 bytes, SHA-256 d4e6345b...c302); unit 173/173; `runGameTestServer` 55/55; generators `--check` clean;
+  (463,963 bytes, SHA-256 cc6bafc8...8518); unit 173/173; `runGameTestServer` 55/55; generators `--check` clean;
   in-game checks with Mekanism 10.7.19 (see `docs/TEST_REPORT.md`).
 
 ## Git

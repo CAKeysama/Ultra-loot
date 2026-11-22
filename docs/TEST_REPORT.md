@@ -16,8 +16,8 @@ Mekanism + Mekanism Generators 10.7.19 (dev-only run `runClientMekanism`)
 | Dedicated server with 2+ players | — | **NOT TESTED** |
 | Other mods (Thermal, Powah, XP fluids, pipes other than Mekanism) | — | **NOT TESTED** |
 
-Artifact: `build/libs/ultraloot-0.2.0.jar`, 462,924 bytes, SHA-256
-`d4e6345b3861f0edfd746d3626bf0f1df6bb88a882569841c64dd7a45f77c302`.
+Artifact: `build/libs/ultraloot-0.2.0.jar`, 463,963 bytes, SHA-256
+`cc6bafc852396196e2f330ce07fdff1fd73f580c58a2e1c1f3bfc9e173138518`.
 
 ### In-game checks (TEST_PLAN manual checks 14-19, plus 1-13 where reachable)
 
