@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ultraloot:loot_generator_t2"
+      }
+    },
+    "has_enhanced_circuit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:enhanced_circuit"
+          }
+        ]
+      }
+    },
+    "has_loot_generator_t1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:loot_generator_t1"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_enhanced_circuit",
+      "has_loot_generator_t1"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ultraloot:loot_generator_t2"
+    ]
+  }
+}

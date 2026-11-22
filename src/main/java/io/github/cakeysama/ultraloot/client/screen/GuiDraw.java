@@ -14,6 +14,9 @@ public final class GuiDraw {
     public static final int GOOD = 0xFF5BE08A;
     public static final int WARN = 0xFFFFB13B;
     public static final int BAD = 0xFFFF5A5A;
+    /** Status classes (docs/UI_UX_GUIDELINES.md): cyan processing, gray inactive; green/amber/red as above. */
+    public static final int PROCESSING = 0xFF3FD8F0;
+    public static final int INACTIVE = 0xFF8A919C;
     public static final int ACCENT_LOOT = 0xFFE8B23A;
     public static final int ACCENT_MOB = 0xFF3FD0C9;
     public static final int ROW_HOVER = 0x22FFFFFF;
@@ -41,13 +44,59 @@ public final class GuiDraw {
         return TIER_COLORS[tier.index()];
     }
 
-    public static int statusColor(MachineStatus status) {
-        if (status.isWorking()) return GOOD;
+    /** How a status reads: never by colour alone, each class also has its own indicator shape. */
+    public enum StatusClass {
+        /** Working right now: cyan, filled square. */
+        PROCESSING,
+        /** Nothing configured yet: gray, hollow square. */
+        INACTIVE,
+        /** Waiting for a resource that arrives on its own (FE, XP, space): amber, exclamation mark. */
+        WARNING,
+        /** Needs the player to change something: red, cross. */
+        BLOCKED
+    }
+
+    public static StatusClass statusClass(MachineStatus status) {
+        if (status.isWorking()) return StatusClass.PROCESSING;
         return switch (status) {
-            case NO_PROFILE, NO_MOB_CARD -> TEXT;
-            case NO_ENERGY, INVALID_PROFILE, INVALID_MOB -> BAD;
-            default -> WARN;
+            case NO_PROFILE, NO_MOB_CARD -> StatusClass.INACTIVE;
+            case NO_ENERGY, NO_XP, OUTPUT_FULL, TARGETS_FULL, NO_TARGETS -> StatusClass.WARNING;
+            default -> StatusClass.BLOCKED;
         };
+    }
+
+    public static int statusColor(MachineStatus status) {
+        return switch (statusClass(status)) {
+            case PROCESSING -> PROCESSING;
+            case INACTIVE -> INACTIVE;
+            case WARNING -> WARN;
+            case BLOCKED -> BAD;
+        };
+    }
+
+    /** 7x7 status indicator at (x, y): the shape encodes the class, the colour reinforces it. */
+    public static void statusIndicator(GuiGraphics graphics, MachineStatus status, int x, int y) {
+        int color = statusColor(status);
+        graphics.fill(x, y, x + 7, y + 7, 0xFF101216);
+        switch (statusClass(status)) {
+            case PROCESSING -> graphics.fill(x + 1, y + 1, x + 6, y + 6, color);
+            case INACTIVE -> {
+                graphics.fill(x + 1, y + 1, x + 6, y + 2, color);
+                graphics.fill(x + 1, y + 5, x + 6, y + 6, color);
+                graphics.fill(x + 1, y + 2, x + 2, y + 5, color);
+                graphics.fill(x + 5, y + 2, x + 6, y + 5, color);
+            }
+            case WARNING -> {
+                graphics.fill(x + 3, y + 1, x + 4, y + 4, color);
+                graphics.fill(x + 3, y + 5, x + 4, y + 6, color);
+            }
+            case BLOCKED -> {
+                for (int i = 1; i < 6; i++) {
+                    graphics.fill(x + i, y + i, x + i + 1, y + i + 1, color);
+                    graphics.fill(x + 6 - i, y + i, x + 7 - i, y + i + 1, color);
+                }
+            }
+        }
     }
 
     /** Draws text cut to {@code maxWidth} with an ellipsis. @return true if it was cut */

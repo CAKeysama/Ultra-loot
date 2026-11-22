@@ -26,6 +26,21 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache") // datagen cache files
 }
 
+// GameTests (and their structure templates) live in their own source set so they never reach the production JAR.
+// The gametest classes see the main classes; the mod is loaded from both source sets in the dev runs (see neoForge.mods).
+sourceSets {
+    gametest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    gametestImplementation.extendsFrom implementation
+    gametestCompileOnly.extendsFrom compileOnly
+    gametestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
 }
@@ -54,12 +69,22 @@ neoForge {
     runs {
         client {
             client()
+            // The gametest source set's runtime classpath contains main as well, so /test works in dev.
+            sourceSet = sourceSets.gametest
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        // Dev-only compatibility client: loads the mods in run-mekanism/mods (Mekanism 10.7.19, copied from the
+        // git-ignored dev-mods/ folder; never a dependency of the mod or part of the JAR). ./gradlew runClientMekanism
+        clientMekanism {
+            client()
+            gameDirectory = project.file('run-mekanism')
+        }
+
         server {
             server()
+            sourceSet = sourceSets.gametest
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
@@ -69,6 +94,7 @@ neoForge {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             type = "gameTestServer"
+            sourceSet = sourceSets.gametest
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -103,6 +129,8 @@ neoForge {
         // multi mod projects should define one per mod
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            // Dev-only: GameTests and their templates. Not part of the jar task (main output only).
+            sourceSet(sourceSets.gametest)
         }
     }
 
@@ -118,6 +146,15 @@ neoForge {
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    gametestRuntimeClasspath.extendsFrom localRuntime
+}
+
+// Minecraft + NeoForge on the gametest compile/runtime classpath.
+neoForge.addModdingDependenciesTo(sourceSets.gametest)
+
+// `build` must at least compile the GameTests so they cannot rot silently.
+tasks.named('check') {
+    dependsOn tasks.named('gametestClasses')
 }
 
 repositories {

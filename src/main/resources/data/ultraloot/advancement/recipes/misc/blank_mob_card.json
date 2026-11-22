@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ultraloot:blank_mob_card"
+      }
+    },
+    "has_blank_card": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:blank_card"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_blank_card"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ultraloot:blank_mob_card"
+    ]
+  }
+}

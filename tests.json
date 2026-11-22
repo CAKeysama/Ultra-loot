@@ -5,19 +5,21 @@
   },
   "summary": {
     "unit": {
-      "pass": 116,
+      "pass": 173,
       "fail": 0,
       "not_run": 0
     },
     "gametest": {
-      "pass": 31,
+      "pass": 55,
       "fail": 0,
       "not_run": 0
     },
     "manual": {
-      "pass": 0,
+      "pass": 2,
       "fail": 0,
-      "not_run": 13
+      "partial": 5,
+      "blocked": 6,
+      "not_run": 6
     }
   },
   "bugs": [
@@ -32,6 +34,12 @@
       "status": "fixed",
       "location": "upgrade/UpgradeModifiers#energyPerOperation",
       "description": "Math.ceil on floating-point noise added 1 FE to exact costs (881 instead of 880)"
+    },
+    {
+      "id": "BUG-03",
+      "status": "fixed",
+      "location": "machine/AbstractMachineBlockEntity#tickOperation, MobLootGeneratorBlockEntity#checkCanOperate",
+      "description": "Cost per operation above the FE buffer / XP tank showed NO_ENERGY / NO_XP forever (could never be paid)"
     }
   ],
   "tests": [
@@ -78,6 +86,13 @@
       "notes": ""
     },
     {
+      "id": "unit.MachineEnergyStorageTest.baseCapacityIsKeptWhenEnough",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
       "id": "unit.MachineEnergyStorageTest.receiveIsRateLimitedPerCall",
       "area": "energy",
       "type": "unit",
@@ -92,7 +107,21 @@
       "notes": ""
     },
     {
+      "id": "unit.MachineEnergyStorageTest.capacityIsCappedAndOverflowSafe",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
       "id": "unit.MachineEnergyStorageTest.receiveRejectsZeroAndNegative",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.capacityGrowsToOneOperation",
       "area": "energy",
       "type": "unit",
       "status": "pass",
@@ -106,7 +135,14 @@
       "notes": ""
     },
     {
-      "id": "unit.MachineEnergyStorageTest.setEnergyClamps",
+      "id": "unit.MachineEnergyStorageTest.setEnergyClampsNegativeAndKeepsAboveCapacity",
+      "area": "energy",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineEnergyStorageTest.shrinkingNeverDiscardsStoredEnergy",
       "area": "energy",
       "type": "unit",
       "status": "pass",
@@ -131,7 +167,7 @@
       "area": "experience",
       "type": "unit",
       "status": "pass",
-      "notes": "c:experience is empty in NeoForge 21.1; conversion math tested via tag-check override"
+      "notes": ""
     },
     {
       "id": "unit.ExperienceFluidAdapterTest.neverExposesOrDrainsFluid",
@@ -295,6 +331,48 @@
       "notes": ""
     },
     {
+      "id": "unit.GuideContentTest.everyIconAndItemExists",
+      "area": "guide",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuideContentTest.everyRecipeIsShipped",
+      "area": "guide",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuideContentTest.everyKeyIsTranslatedInBothLanguages",
+      "area": "guide",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuideContentTest.unknownItemsFallBackToABarrier",
+      "area": "guide",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuideContentTest.itemSpecsParse",
+      "area": "guide",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuideContentTest.bookHasChaptersAndPages",
+      "area": "guide",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
       "id": "unit.TransactionalInserterTest.partialFitIsRejectedEntirely",
       "area": "inventory",
       "type": "unit",
@@ -453,7 +531,7 @@
       "area": "loot",
       "type": "unit",
       "status": "pass",
-      "notes": "asserts auto profiles use Balance.autoProfileMinTier / autoProfileEnergyMultiplier"
+      "notes": ""
     },
     {
       "id": "unit.LootModelTest.lootResultCountsItems",
@@ -526,323 +604,652 @@
       "notes": ""
     },
     {
+      "id": "unit.CardRestorerLogicTest.finishEstimates",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.noWearOrNoRateDoesNothing",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.largeValuesDoNotOverflow",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.partialEnergyRepairsOnlyWhatIsPaid",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.fullRateWhenEnergyIsPlenty",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.costBelowOneCountsAsOne",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.costPerWearRoundsUpWithMinimumOne",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.zeroEnergyRepairsNothing",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.exactFillSpendsEverything",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardRestorerLogicTest.wearBelowRateFinishesTheCard",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
       "id": "unit.RelativeSideTest.[1] north",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.RelativeSideTest.[2] south",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.RelativeSideTest.[3] west",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.RelativeSideTest.[4] east",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.RelativeSideTest.rotatingTheMachineRotatesItsSides",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.RelativeSideTest.leftAndRightForEveryFacing",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.RelativeSideTest.byOrdinalFallsBackToFront",
-      "area": "side-config",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[1] north",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[2] south",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[3] west",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.RelativeSideTest.[4] east",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.setReportsChanges",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.resetRestoresDefaults",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.[1] LOOT_GENERATOR",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.[2] MOB_LOOT_GENERATOR",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
-      "id": "unit.SideConfigurationTest.Out-of-range persisted ordinals fall back to the family default, not to NONE ",
-      "area": "side-config",
+      "id": "unit.SideConfigurationTest.[1] LOOT_GENERATOR",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.[2] MOB_LOOT_GENERATOR",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.Out-of-range persisted ordinals fall back to the family default, not to NONE (regression BUG-01)",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.lootGeneratorDefaults",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.anyFindsConfiguredModes",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.fromArrayRejectsModesNotAllowedForTheFamily",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.cycleOnlyTouchesOneSide",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.mobLootGeneratorDefaults",
-      "area": "side-config",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.[1] LOOT_GENERATOR",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.SideConfigurationTest.[2] MOB_LOOT_GENERATOR",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.setRejectsModesOfTheOtherFamily",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.fromArrayWithWrongLengthResetsToDefaults",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.getByWorldDirectionUsesFacing",
-      "area": "side-config",
+      "area": "machine",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.SideConfigurationTest.cycleOrderAndWrapForLootGenerator",
-      "area": "side-config",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TierBalanceTest.unlistedMobsUseTheTierTwoFloor",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TierBalanceTest.autoProfilesAreNeverCheaperThanExplicitOnes",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TierBalanceTest.mobTierBandsAreOrderedAndDisjoint",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TierBalanceTest.hugeConfiguredCostSaturatesInsteadOfOverflowing",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TierBalanceTest.machineFePerAttemptNeverIncreasesWithTier",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.TierBalanceTest.everyMobIsInsideItsTierBandOrDeclaresAnException",
+      "area": "machine",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuiSyncDeltaTest.firstSnapshotIsSentWhole",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuiSyncDeltaTest.unchangedProfilesAreLeftOutAndRestoredByTheClient",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuiSyncDeltaTest.changedProfilesAreSent",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuiSyncDeltaTest.emptyProfileListReplacesAFullOne",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.GuiSyncDeltaTest.nonStickyKeysAreNeverCarriedOver",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardWearTest.corruptedCardSaturates",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardWearTest.intactCardHasNoPenalty",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardWearTest.decayIsLinearAfterIntegrity",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardWearTest.addWearSaturatesWithoutOverflow",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.CardWearTest.penaltiesNeverDecreaseWithWear",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.fallbackOnlyWhenNativeTableIsMissing",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.missingSupplementalIsAnError",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.supplementalAddRollsBothTables",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.missingNativeWithoutFallbackIsReported",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.validEmptyNativeTableDoesNotTriggerFallback",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.missingFallbackIsAnError",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.vanillaNativeTableIsPrimary",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.noSupplementalIsEverAddedAutomatically",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.disabledSupplementalHasNoEffect",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.entityWithoutLootTableKeyUsesFallback",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.supplementalAddAlsoAppliesToFallback",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.supplementalReplaceIgnoresNative",
+      "area": "mob",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.HybridLootResolverTest.moddedNativeTableIsPrimary",
+      "area": "mob",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.insertOfWrongCategoryIsRejected",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.levelsIgnoreCardForcedIntoTheWrongSlot",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.slotLimitIsOneCard",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.hasOneSlotPerCategory",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.rejectsNonCards",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.eachSlotOnlyAcceptsItsCategory",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.levelsReflectInstalledCards",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeInventoryTest.nbtRoundTrip",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.energyCostIsAlwaysAtLeastOneFe",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.invariantsHoldForEveryCombination",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.ticksNeverDropBelowMinimum",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.upgradeLevelsValidation",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.[1] T1",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.[2] T2",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.[3] T3",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.[4] T4",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.lootGeneratorWithoutCards",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.speedCardLevels",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.lootCardLevels",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
-      "id": "unit.UpgradeModifiersTest.Exact multiples are not rounded up by floating point noise: 880 FE for Range I at 800 FE ",
-      "area": "upgrades",
+      "id": "unit.UpgradeModifiersTest.Exact multiples are not rounded up by floating point noise: 880 FE for Range I at 800 FE (regression BUG-02)",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.energyFloorPreventsNearZeroCost",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.rangeCardExtendsLootRangeButOnlyOrbRadiusOnMobGenerator",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.quantityCardLevels",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.efficiencyCardLevels",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
     },
     {
       "id": "unit.UpgradeModifiersTest.allCardsAtLevelThreeCombine",
-      "area": "upgrades",
+      "area": "upgrade",
       "type": "unit",
       "status": "pass",
       "notes": ""
@@ -946,18 +1353,25 @@
       "notes": ""
     },
     {
+      "id": "gametest.inventoryScanReusesCapabilityCaches",
+      "area": "machine",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
       "id": "gametest.lootGeneratorFishingProfileFillsChest",
       "area": "loot-generator",
       "type": "gametest",
       "status": "pass",
-      "notes": "asserts no entity at all (incl. FishingHook) is added to the world"
+      "notes": ""
     },
     {
       "id": "gametest.autoProfilesAreGatedByTierAndCost",
       "area": "loot-profiles",
       "type": "gametest",
       "status": "pass",
-      "notes": "currently passes as a logged skip: every vanilla chests/* table is covered by a shipped ultraloot profile, so no auto profile exists"
+      "notes": ""
     },
     {
       "id": "gametest.explorationMapTablesAreNeverProfiles",
@@ -1041,11 +1455,172 @@
       "area": "mob-loot-generator",
       "type": "gametest",
       "status": "pass",
-      "notes": "orb motion zeroed: vanilla random spawn motion made the test flaky (1 failure in 5 runs)"
+      "notes": ""
     },
     {
       "id": "gametest.mobGeneratorIgnoresOrbsWithoutRangeCard",
       "area": "mob-loot-generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorBufferGrowsToOneOperation",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorBufferShrinkKeepsEnergy",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorReportsCostAboveHardCap",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobCardWearIsCommittedPerKill",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobCardWearUnchangedOnFailure",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.corruptedMobCardYieldsRottenFleshAtDoubleCost",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.decayingCardMixesRottenFleshAndLoot",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.hybridLootNativeVanillaTable",
+      "area": "loot",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.hybridLootValidEmptyTable",
+      "area": "loot",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.hybridLootSupplementalAdd",
+      "area": "loot",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.hybridLootSupplementalReplace",
+      "area": "loot",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.hybridLootMissingTableIsReported",
+      "area": "loot",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.unlistedMobUsesTierTwoDefaults",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobCardInsertedThroughXpInputFace",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.orbsSmallOrbIsAbsorbed",
+      "area": "machine",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.orbsExactFill",
+      "area": "machine",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.orbsOversizedThenSmall",
+      "area": "machine",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.orbsFullTankLeavesOrbs",
+      "area": "machine",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.orbsMixedSizes",
+      "area": "machine",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.cardRestorerRepairsForExactEnergy",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.cardRestorerWithoutEnergyChangesNothing",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.cardRestorerAutomationNeverStealsTheInput",
+      "area": "mob",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.mobGeneratorReportsXpTankTooSmall",
+      "area": "mob-generator",
       "type": "gametest",
       "status": "pass",
       "notes": ""
@@ -1068,92 +1643,134 @@
       "id": "manual.gui-layout",
       "area": "gui",
       "type": "manual",
-      "status": "not_run",
-      "notes": "Both machines, all tiers: tabs, widgets, tooltips, bars match numbers"
+      "status": "partial",
+      "notes": "Tier I main tab of all three machines rendered and updated live (screenshots 18.52-18.59, run-mekanism/screenshots). Other tabs and tiers BLOCKED: mouse input did not reach the game (always-on-top window over it)."
     },
     {
       "id": "manual.gui-upgrade-slots",
       "area": "gui",
       "type": "manual",
-      "status": "not_run",
-      "notes": "Shift-click cards, duplicate category refused, stats update live"
+      "status": "blocked",
+      "notes": "Needs mouse clicks in the GUI. Card effect verified via NBT: Quantity III changed XP/op and FE/op."
     },
     {
       "id": "manual.gui-side-config",
       "area": "gui",
       "type": "manual",
-      "status": "not_run",
-      "notes": "Cycle modes, colours, survives rotation and chunk reload"
+      "status": "blocked",
+      "notes": "Needs mouse clicks in the GUI. Default sides verified in world: back energy input, top XP/card input, bottom item output."
     },
     {
       "id": "manual.gui-profile-selector",
       "area": "gui",
       "type": "manual",
-      "status": "not_run",
-      "notes": "Scrolling, auto profiles, min-tier lock, persists after relog"
+      "status": "blocked",
+      "notes": "Needs mouse clicks. Profile set via NBT; GUI showed Abandoned Mineshaft selected with tooltip."
     },
     {
       "id": "manual.gui-scan-list",
       "area": "gui",
       "type": "manual",
-      "status": "not_run",
-      "notes": "States FULL/NOT_STORAGE/FACE_DISABLED shown, Rescan works"
+      "status": "blocked",
+      "notes": "Needs mouse clicks. GUI showed Targets 2."
     },
     {
       "id": "manual.gui-filters",
       "area": "gui",
       "type": "manual",
-      "status": "not_run",
-      "notes": "Disabled without Loot Card, reset to ALL when card removed"
+      "status": "blocked",
+      "notes": "Needs mouse clicks."
     },
     {
       "id": "manual.render-active-state",
       "area": "rendering",
       "type": "manual",
       "status": "not_run",
-      "notes": "Front lights while running, ~2 s linger, no flicker"
+      "notes": ""
     },
     {
       "id": "manual.mob-card-imprint",
       "area": "mob",
       "type": "manual",
       "status": "not_run",
-      "notes": "Imprint vanilla/modded mob, boss refused with message, tint"
+      "notes": ""
     },
     {
       "id": "manual.xp-capsule",
       "area": "experience",
       "type": "manual",
       "status": "not_run",
-      "notes": "Store/release, 1395 cap, drains in XP slot, empty capsule extractable"
+      "notes": ""
     },
     {
       "id": "manual.break-drops",
       "area": "machine",
       "type": "manual",
       "status": "not_run",
-      "notes": "All inventories drop, stored XP drops as orbs"
+      "notes": ""
     },
     {
       "id": "manual.multiplayer-sync",
       "area": "network",
       "type": "manual",
       "status": "not_run",
-      "notes": "Two players see same values; invalid C2S rejected"
+      "notes": "Needs a dedicated server and two clients."
     },
     {
       "id": "manual.compat-energy-fluid-pipes",
       "area": "compat",
       "type": "manual",
-      "status": "not_run",
-      "notes": "Modded FE cable rate, c:experience fluid fills tank, pipes on output faces only"
+      "status": "partial",
+      "notes": "Mekanism 10.7.19: universal cable powers the machines; Logistical Transporter extracts from the Item Output face. XP fluids and other mods not tested."
     },
     {
       "id": "manual.performance-50-machines",
       "area": "performance",
       "type": "manual",
       "status": "not_run",
-      "notes": "TPS/profiler with 50 Range III Loot Generators"
+      "notes": ""
+    },
+    {
+      "id": "manual.status-colours",
+      "area": "client",
+      "type": "manual",
+      "status": "partial",
+      "notes": "Seen: cyan Running, amber '! Not enough energy', red 'x Cost exceeds XP tank' (Tier I + evoker + Quantity III, 1,200 XP/op > 1,000), red 'x This mob cannot be simulated' (giant), restorer gray 'Waiting for a card'. NO_LOOT_SOURCE not reproduced in client (covered by GameTest)."
+    },
+    {
+      "id": "manual.card-wear",
+      "area": "client",
+      "type": "manual",
+      "status": "partial",
+      "notes": "Hotbar bars: new none, 1500 green, 2560 amber, 3072 empty. FE/op zombie Tier I: 720 / 1,080 / 1,440 (x1, x1.5, x2). Integrity row in Mob Configuration tab BLOCKED (mouse)."
+    },
+    {
+      "id": "manual.card-restorer",
+      "area": "client",
+      "type": "manual",
+      "status": "partial",
+      "notes": "Corrupted zombie card (3072) repaired to wear 0 and moved to output; status Restoring then Waiting for a card; FE-to-finish fell 50,112 -> 26,880. Hopper in/out and OUTPUT_FULL not tested."
+    },
+    {
+      "id": "manual.recipe-book",
+      "area": "client",
+      "type": "manual",
+      "status": "blocked",
+      "notes": "Needs mouse clicks in the recipe book."
+    },
+    {
+      "id": "manual.guide-book",
+      "area": "client",
+      "type": "manual",
+      "status": "pass",
+      "notes": "Given on first join, not again on two later logins; opens; chapter list click and arrow/keys navigation; crafting grid; hover tooltip; worn-card bars; reopens on last page; English (51 views) and Portuguese (55 views). Tag-ingredient cycling not observed."
+    },
+    {
+      "id": "manual.mekanism",
+      "area": "client",
+      "type": "manual",
+      "status": "pass",
+      "notes": "Creative energy cube -> universal cable powered Mob Loot Generator, Loot Generator and Card Restorer. Hopper -> Logistical Transporter inserted a Mob Card into the top (XP Input) face; a transporter under the machine moved 19 Rotten Flesh to a chest. Note: a /setblock creative cube starts empty and needed energy_containers + output side NBT."
     }
   ]
 }

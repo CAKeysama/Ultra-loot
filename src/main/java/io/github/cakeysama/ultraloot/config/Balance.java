@@ -22,8 +22,11 @@ public final class Balance {
     public static final int[] LOOT_BASE_RANGE = {5, 8, 12, 16};
     /** Ticks per operation at 1x speed. */
     public static int lootBaseTicks = 200;
-    /** E_base: FE per operation before modifiers. */
-    public static int[] lootEnergyPerOperation = {800, 1_600, 3_000, 6_000};
+    /**
+     * FE per loot roll before modifiers, by tier. E_base (FE per operation) = this x {@link #LOOT_BASE_ATTEMPTS}.
+     * Design rule (docs/BALANCE.md P2-04): never increases with tier; each tier saves 10% of the Tier I cost.
+     */
+    public static int[] lootEnergyPerAttempt = {800, 720, 640, 560};
     /** Ticks between inventory scans. */
     public static int scanIntervalTicks = 100;
     /** Maximum scan entries kept for the GUI list. */
@@ -38,7 +41,11 @@ public final class Balance {
     /** Maximum XP points accepted per tick through XP Input faces (capability / fluid). */
     public static final int[] MOB_XP_INPUT = {50, 150, 400, 1_000};
     public static int mobBaseTicks = 300;
-    public static int[] mobEnergyPerOperation = {1_200, 2_400, 4_500, 9_000};
+    /**
+     * FE per simulated kill before modifiers, by tier. E_base = this x {@link #MOB_BASE_KILLS}.
+     * Same rule as {@link #lootEnergyPerAttempt}.
+     */
+    public static int[] mobEnergyPerKill = {1_200, 1_080, 960, 840};
     /** XP points per simulated kill when a mob has no {@code ultraloot:mob_simulation} data map entry. */
     public static int defaultXpPerKill = 8;
     public static final int MOB_OUTPUT_SLOTS = 27;
@@ -46,6 +53,26 @@ public final class Balance {
     public static final int EXPORT_ITEMS_PER_FACE = 64;
     public static final int XP_ITEM_INTERVAL_TICKS = 5;
     public static final int ORB_COLLECT_INTERVAL_TICKS = 20;
+
+    // ---- Mob Card wear (ultraloot:card_wear = simulated kills read from the card) ---------------
+    /** Kills a Mob Card delivers at full quality. */
+    public static int mobCardIntegrity = 2_048;
+    /** Kills over which a worn card decays from full quality to fully corrupted (rotten flesh only). */
+    public static int mobCardDecaySpan = 1_024;
+    /** Extra FE per operation at full corruption, as a fraction of the normal cost (1.0 = twice the cost). */
+    public static final double MOB_CARD_DECAY_ENERGY = 1.0;
+
+    // ---- Card Restorer ------------------------------------------------------------------------
+    public static final int RESTORER_ENERGY_CAPACITY = 50_000;
+    public static final int RESTORER_ENERGY_INPUT = 1_000;
+    /** Wear points removed per tick while powered. */
+    public static int restorerWearPerTick = 8;
+    /** FE per wear point removed, multiplied by the mob's energy multiplier. */
+    public static int restorerEnergyPerWear = 40;
+
+    // ---- Guide book ----
+    /** Give every player one Ultra Loot Guide the first time they join a world (server config). */
+    public static boolean giveGuideOnFirstJoin = true;
 
     // ---- Experience ---------------------------------------------------------------------------
     /** mB of an experience fluid (tag c:experience) per XP point. */
@@ -80,5 +107,13 @@ public final class Balance {
     public static boolean autoDiscoverChestTables = true;
     /** Auto-discovered (usually modded) chest tables are unknown value: gate them behind Tier II and extra FE. */
     public static int autoProfileMinTier = 2;
-    public static double autoProfileEnergyMultiplier = 1.5;
+    /** 1.67 keeps the Tier II price of 0.1.x (1.5 x 800 FE per roll) under the 0.2.0 tier costs (720 FE per roll). */
+    public static double autoProfileEnergyMultiplier = 1.67;
+
+    // ---- Dynamic FE buffer --------------------------------------------------------------------
+    /**
+     * Upper bound of one operation's FE cost and therefore of the dynamic buffer: the buffer grows to hold one
+     * operation (pay once, on success) but never beyond this, whatever a datapack or config says.
+     */
+    public static final int MAX_OPERATION_ENERGY = 100_000_000;
 }

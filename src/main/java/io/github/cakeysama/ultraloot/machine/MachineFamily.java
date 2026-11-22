@@ -51,8 +51,18 @@ public enum MachineFamily {
         return this == LOOT_GENERATOR ? Balance.lootBaseTicks : Balance.mobBaseTicks;
     }
 
+    /**
+     * E_base: FE per operation before card and profile/mob multipliers = FE per attempt x base attempts. The config
+     * does not bound FE per attempt, so the product saturates at {@link Integer#MAX_VALUE} instead of overflowing
+     * (the machine then reports ENERGY_BUFFER_TOO_SMALL rather than running for a negative cost).
+     */
     public int baseEnergyPerOperation(MachineTier tier) {
-        int[] table = this == LOOT_GENERATOR ? Balance.lootEnergyPerOperation : Balance.mobEnergyPerOperation;
+        return (int) Math.min(Integer.MAX_VALUE, (long) baseEnergyPerAttempt(tier) * baseAttempts(tier));
+    }
+
+    /** FE per loot roll (Loot Generator) or simulated kill (Mob Loot Generator) before multipliers. */
+    public int baseEnergyPerAttempt(MachineTier tier) {
+        int[] table = this == LOOT_GENERATOR ? Balance.lootEnergyPerAttempt : Balance.mobEnergyPerKill;
         return table[tier.index()];
     }
 

@@ -8,6 +8,7 @@
     "ultraloot:mob_loot_generator_t1",
     "ultraloot:mob_loot_generator_t2",
     "ultraloot:mob_loot_generator_t3",
-    "ultraloot:mob_loot_generator_t4"
+    "ultraloot:mob_loot_generator_t4",
+    "ultraloot:card_restorer"
   ]
 }

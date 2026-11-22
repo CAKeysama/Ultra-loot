@@ -20,5 +20,12 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> STORED_XP =
             REGISTER.registerComponentType("stored_xp", b -> b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /**
+     * Wear of a Mob Card: simulated kills read from it since it was imprinted or last restored (absent = 0, so cards
+     * from older versions start intact). See {@link io.github.cakeysama.ultraloot.mob.CardWear}.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CARD_WEAR =
+            REGISTER.registerComponentType("card_wear", b -> b.persistent(Codec.intRange(0, Integer.MAX_VALUE)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private ModDataComponents() {}
 }

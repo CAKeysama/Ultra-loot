@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ultraloot:speed_card_2"
+      }
+    },
+    "has_speed_card_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:speed_card_1"
+          }
+        ]
+      }
+    },
+    "has_enhanced_circuit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:enhanced_circuit"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_speed_card_1",
+      "has_enhanced_circuit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ultraloot:speed_card_2"
+    ]
+  }
+}

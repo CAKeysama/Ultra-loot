@@ -6,9 +6,11 @@ import io.github.cakeysama.ultraloot.experience.ExperienceCapsuleItem;
 import io.github.cakeysama.ultraloot.experience.ExperienceTank;
 import io.github.cakeysama.ultraloot.experience.IExperienceStorage;
 import io.github.cakeysama.ultraloot.inventory.RestrictedItemHandler;
+import io.github.cakeysama.ultraloot.inventory.StackedItemHandler;
 import io.github.cakeysama.ultraloot.inventory.TransactionalInserter;
-import io.github.cakeysama.ultraloot.loot.LootEngine;
 import io.github.cakeysama.ultraloot.menu.MobLootGeneratorMenu;
+import io.github.cakeysama.ultraloot.mob.CardWear;
+import io.github.cakeysama.ultraloot.mob.HybridLootResolver;
 import io.github.cakeysama.ultraloot.mob.MobCardItem;
 import io.github.cakeysama.ultraloot.mob.MobLootSimulator;
 import io.github.cakeysama.ultraloot.mob.MobSimulationData;
@@ -72,6 +74,7 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         @Override
         protected void onContentsChanged(int slot) {
             entityCache.clear();
+            lootProblem = null;
             progress = 0;
             setChanged();
         }
@@ -92,6 +95,17 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
     private final IItemHandler xpSlotView = new RestrictedItemHandler(xpSlot,
             MobLootGeneratorBlockEntity::isExperienceItem,
             stack -> stack.is(ModItems.EXPERIENCE_CAPSULE.get()) && ExperienceCapsuleItem.stored(stack) == 0);
+    /** Insert-only view of the card slot: automation may load a card but never extracts one. */
+    private final IItemHandler cardInsertView = new RestrictedItemHandler(cardSlot,
+            MobLootGeneratorBlockEntity::isValidCard, stack -> false);
+    /**
+     * XP Input faces: slot 0 is the XP item slot, slot 1 accepts a Mob Card into the (empty, limit 1) card slot.
+     * Cards are never extracted by automation, so a pipe pulling from the machine can never steal the card.
+     */
+    private final IItemHandler xpInputView = new StackedItemHandler(xpSlotView, cardInsertView);
+    /** Why the last simulation could not run (GUI tooltip); null when the loot sources resolved. */
+    @Nullable
+    private HybridLootResolver.Problem lootProblem;
 
     private final SimulatedEntityCache entityCache = new SimulatedEntityCache();
     private final Map<Direction, BlockCapabilityCache<IItemHandler, Direction>> exportTargets = new EnumMap<>(Direction.class);
@@ -136,7 +150,10 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         Optional<EntityType<?>> mob = mob();
         if (mob.isEmpty()) return MachineStatus.NO_MOB_CARD;
         if (!MobCardItem.isSupported(mob.get())) return MachineStatus.INVALID_MOB;
-        if (experience.getExperience() < experiencePerOperation()) return MachineStatus.NO_XP;
+        int xpCost = experiencePerOperation();
+        // XP is paid in one piece per operation; a cost above the tank could never be paid.
+        if (xpCost > experience.getCapacity()) return MachineStatus.XP_TANK_TOO_SMALL;
+        if (experience.getExperience() < xpCost) return MachineStatus.NO_XP;
         if (TransactionalInserter.freeSlots(output) == 0 && isOutputCompletelyFull()) return MachineStatus.OUTPUT_FULL;
         return null;
     }
@@ -149,15 +166,24 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         int xpCost = experiencePerOperation();
         if (experience.getExperience() < xpCost) return MachineStatus.NO_XP;
 
-        LootEngine.Result result;
+        int kills = modifiers().attempts();
+        ItemStack card = cardSlot.getStackInSlot(0);
+        int wear = CardWear.wear(card);
+
+        // Atomic order (docs/ARCHITECTURE.md): card -> XP -> FE (base class) -> simulate -> output fits -> commit.
+        MobLootSimulator.Outcome outcome;
         try {
-            result = MobLootSimulator.simulate(serverLevel, worldPosition, mob.get(),
-                    modifiers().attempts(), modifiers().lootBonus(), filter, entityCache);
+            outcome = MobLootSimulator.simulate(serverLevel, worldPosition, mob.get(), kills, modifiers().lootBonus(),
+                    filter, entityCache, MobSimulationData.of(mob.get()), CardWear.decay(wear));
         } catch (RuntimeException e) {
             UltraLoot.LOGGER.error("Simulating {} failed at {}", mob.get(), worldPosition, e);
             return MachineStatus.INVALID_MOB;
         }
-        if (result == null) return MachineStatus.INVALID_MOB;
+        lootProblem = outcome.problem();
+        if (outcome.result() == null) {
+            return lootProblem != null ? MachineStatus.NO_LOOT_SOURCE : MachineStatus.INVALID_MOB;
+        }
+        var result = outcome.result();
 
         List<IItemHandler> targets = List.of(output);
         var plan = TransactionalInserter.plan(result.items(), targets, 0);
@@ -168,8 +194,15 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         if (!leftovers.isEmpty()) throw new IllegalStateException("Mob Loot Generator output rejected a simulated insertion");
         experience.consume(xpCost);
         energy.consume(energyCost);
+        // Wear is mutated in place so the card slot's change hook (which resets progress) does not fire.
+        CardWear.setWear(card, CardWear.addWear(wear, kills));
         statistics.recordOperation(energyCost, xpCost, result.itemCount(), result.filteredCount());
         return MachineStatus.RUNNING;
+    }
+
+    /** Wear of the installed card (0 without a card). */
+    public int cardWear() {
+        return CardWear.wear(cardSlot.getStackInSlot(0));
     }
 
     private boolean isOutputCompletelyFull() {
@@ -182,7 +215,8 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
 
     @Override
     protected double energyBaseMultiplier() {
-        return mob().map(type -> MobSimulationData.of(type).energyMultiplier()).orElse(1.0);
+        return mob().map(type -> MobSimulationData.of(type).energyMultiplier() * CardWear.energyFactor(cardWear()))
+                .orElse(1.0);
     }
 
     // ---- XP intake -------------------------------------------------------------------------------
@@ -214,7 +248,7 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
             int value = orb.getValue();
             if (value <= 0) continue;
             int absorbable = Math.min(orb.count, experience.space() / value);
-            if (absorbable <= 0) break;
+            if (absorbable <= 0) continue; // too big for the remaining space; smaller orbs may still fit
             experience.insert(absorbable * value, false);
             orb.count -= absorbable;
             if (orb.count <= 0) orb.discard();
@@ -263,7 +297,7 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         if (side == null) return outputView;
         return switch (sideMode(side)) {
             case ITEM_OUTPUT -> outputView;
-            case XP_INPUT -> xpSlotView;
+            case XP_INPUT -> xpInputView;
             default -> null;
         };
     }
@@ -305,6 +339,9 @@ public class MobLootGeneratorBlockEntity extends AbstractMachineBlockEntity {
             tag.putBoolean("mobSupported", MobCardItem.isSupported(type));
         });
         tag.putInt("outputFree", TransactionalInserter.freeSlots(output));
+        tag.putInt("cardWear", cardWear());
+        tag.putInt("cardMaxWear", CardWear.maxWear());
+        if (lootProblem != null) tag.putString("lootProblem", lootProblem.name());
     }
 
     // ---- Persistence --------------------------------------------------------------------------------

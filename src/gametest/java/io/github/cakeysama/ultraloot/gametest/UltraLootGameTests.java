@@ -10,14 +10,19 @@ import io.github.cakeysama.ultraloot.loot.LootFilter;
 import io.github.cakeysama.ultraloot.loot.LootProfile;
 import io.github.cakeysama.ultraloot.loot.LootProfileManager;
 import io.github.cakeysama.ultraloot.machine.LootGeneratorBlockEntity;
+import io.github.cakeysama.ultraloot.machine.CardRestorerBlockEntity;
+import io.github.cakeysama.ultraloot.machine.CardRestorerStatus;
 import io.github.cakeysama.ultraloot.machine.MachineFamily;
 import io.github.cakeysama.ultraloot.machine.MachineStatus;
 import io.github.cakeysama.ultraloot.machine.MachineTier;
 import io.github.cakeysama.ultraloot.machine.MobLootGeneratorBlockEntity;
 import io.github.cakeysama.ultraloot.machine.RelativeSide;
 import io.github.cakeysama.ultraloot.machine.SideMode;
+import io.github.cakeysama.ultraloot.mob.CardWear;
+import io.github.cakeysama.ultraloot.mob.HybridLootResolver;
 import io.github.cakeysama.ultraloot.mob.MobCardItem;
 import io.github.cakeysama.ultraloot.mob.MobLootSimulator;
+import io.github.cakeysama.ultraloot.mob.MobSimulationData;
 import io.github.cakeysama.ultraloot.mob.SimulatedEntityCache;
 import io.github.cakeysama.ultraloot.registry.ModBlocks;
 import io.github.cakeysama.ultraloot.registry.ModItems;
@@ -30,6 +35,8 @@ import net.minecraft.gametest.framework.BeforeBatch;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -46,6 +53,7 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -56,7 +64,10 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * In-world behaviour of both machines. Every test uses the empty 15x6x15 template {@code ultraloot:empty} with the
@@ -398,6 +409,77 @@ public final class UltraLootGameTests {
         helper.succeed();
     }
 
+    /**
+     * P3-03: target capability caches are created once per target and reused by later scans; targets that leave
+     * the scan are pruned and a reused cache follows the block that replaced the old one.
+     */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void inventoryScanReusesCapabilityCaches(GameTestHelper helper) {
+        LootGeneratorBlockEntity be = bareLootGenerator(helper);
+        BlockPos aRel = MACHINE.offset(-3, 0, 0);
+        BlockPos bRel = MACHINE.offset(3, 0, 0);
+        chest(helper, aRel);
+        chest(helper, bRel);
+        ServerLevel level = helper.getLevel();
+        BlockPos origin = abs(helper, MACHINE);
+        int range = be.modifiers().range();
+        InventoryScanner.TargetMode mode = InventoryScanner.TargetMode.ANY_INVENTORY;
+        int scans = 20;
+
+        // Previous behaviour: a fresh BlockCapabilityCache per target on every scan.
+        long start = InventoryScanner.totalCacheCreations();
+        for (int i = 0; i < scans; i++) InventoryScanner.scan(level, origin, be.facing(), be.sides(), range, mode);
+        long uncached = InventoryScanner.totalCacheCreations() - start;
+        helper.assertValueEqual(uncached, 2L * scans, "creations without persistent caches");
+
+        // Persistent caches: creations stop growing once every target has one.
+        InventoryScanner.TargetCaches caches = new InventoryScanner.TargetCaches();
+        start = InventoryScanner.totalCacheCreations();
+        InventoryScanner.Result result = InventoryScanner.Result.EMPTY;
+        for (int i = 0; i < scans; i++) {
+            result = InventoryScanner.scan(level, origin, be.facing(), be.sides(), range, mode, caches);
+            helper.assertValueEqual(result.targets().size(), 2, "targets in scan " + i);
+            helper.assertValueEqual(caches.creations(), 2L, "creations after scan " + i);
+        }
+        long cached = InventoryScanner.totalCacheCreations() - start;
+        helper.assertValueEqual(cached, 2L, "creations with persistent caches");
+        helper.assertValueEqual(caches.size(), 2, "caches held");
+        UltraLoot.LOGGER.info("GameTest inventoryScanReusesCapabilityCaches: {} scans x 2 targets -> {} cache creations before, {} after",
+                scans, uncached, cached);
+
+        // A target that disappears is pruned; the remaining cache is kept.
+        helper.setBlock(bRel, Blocks.AIR);
+        result = InventoryScanner.scan(level, origin, be.facing(), be.sides(), range, mode, caches);
+        helper.assertValueEqual(result.targets().size(), 1, "targets after removing a chest");
+        helper.assertValueEqual(caches.size(), 1, "caches held after removing a chest");
+        helper.assertValueEqual(caches.creations(), 2L, "creations after removing a chest");
+
+        // Replacing the remaining chest reuses its cache, which NeoForge invalidated: it now sees the new chest.
+        helper.setBlock(aRel, Blocks.AIR);
+        ChestBlockEntity replacement = chest(helper, aRel);
+        replacement.setItem(0, new ItemStack(Items.DIAMOND, 5));
+        result = InventoryScanner.scan(level, origin, be.facing(), be.sides(), range, mode, caches);
+        helper.assertValueEqual(result.targets().size(), 1, "targets after replacing a chest");
+        helper.assertValueEqual(caches.creations(), 2L, "creations after replacing a chest");
+        IItemHandler handler = result.targets().getFirst().handler();
+        helper.assertTrue(handler != null && handler.getStackInSlot(0).is(Items.DIAMOND), "reused cache does not see the new chest");
+
+        // A target coming back gets a new cache; clear() drops everything.
+        chest(helper, bRel);
+        InventoryScanner.scan(level, origin, be.facing(), be.sides(), range, mode, caches);
+        helper.assertValueEqual(caches.creations(), 3L, "creations after a chest came back");
+        caches.clear();
+        helper.assertValueEqual(caches.size(), 0, "caches held after clear");
+
+        // The machine owns its caches and drops them when its faces change.
+        be.setTargetMode(mode);
+        be.tickServer(level);
+        helper.assertTrue(be.targetCaches().size() > 0, "machine scan did not populate its caches (status " + be.status() + ")");
+        be.setSide(RelativeSide.TOP, SideMode.NONE);
+        helper.assertValueEqual(be.targetCaches().size(), 0, "machine caches after a face change");
+        helper.succeed();
+    }
+
     @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
     public static void lootGeneratorFishingProfileFillsChest(GameTestHelper helper) {
         LootGeneratorBlockEntity be = bareLootGenerator(helper);
@@ -477,10 +559,17 @@ public final class UltraLootGameTests {
 
     // ---- Mob simulation -------------------------------------------------------------------------------
 
+    /** Simulates at the test machine position; null when the mob cannot be simulated. */
+    @Nullable
+    private static LootEngine.Result simulate(GameTestHelper helper, EntityType<?> type, int kills, int looting,
+                                              MobSimulationData data, double decay) {
+        return MobLootSimulator.simulate(helper.getLevel(), abs(helper, MACHINE), type, kills, looting, LootFilter.ALL,
+                new SimulatedEntityCache(), data, decay).result();
+    }
+
     @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
     public static void magmaCubeSimulationDropsMagmaCream(GameTestHelper helper) {
-        LootEngine.Result result = MobLootSimulator.simulate(helper.getLevel(), abs(helper, MACHINE), EntityType.MAGMA_CUBE,
-                40, 3, LootFilter.ALL, new SimulatedEntityCache());
+        LootEngine.Result result = simulate(helper, EntityType.MAGMA_CUBE, 40, 3, MobSimulationData.of(EntityType.MAGMA_CUBE), 0);
         helper.assertTrue(result != null, "magma cube cannot be simulated");
         helper.assertTrue(count(result.items(), Items.MAGMA_CREAM) > 0,
                 "40 simulated magma cube kills with Looting III dropped no magma cream: " + result.items());
@@ -490,8 +579,7 @@ public final class UltraLootGameTests {
 
     @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
     public static void slimeSimulationDropsSlimeBalls(GameTestHelper helper) {
-        LootEngine.Result result = MobLootSimulator.simulate(helper.getLevel(), abs(helper, MACHINE), EntityType.SLIME,
-                40, 3, LootFilter.ALL, new SimulatedEntityCache());
+        LootEngine.Result result = simulate(helper, EntityType.SLIME, 40, 3, MobSimulationData.of(EntityType.SLIME), 0);
         helper.assertTrue(result != null, "slime cannot be simulated");
         helper.assertTrue(count(result.items(), Items.SLIME_BALL) > 0,
                 "40 simulated slime kills with Looting III dropped no slime balls: " + result.items());
@@ -643,6 +731,385 @@ public final class UltraLootGameTests {
             orb.discard();
             helper.succeed();
         });
+    }
+
+    /**
+     * Dynamic FE buffer (BALANCE 7.2, replaces the P1-01 deadlock): an evoker card costs 1,200 x 10 = 12,000 FE per
+     * operation on a Tier I machine, more than the 10,000 FE base buffer. The buffer must grow to one operation, the
+     * machine must run, and the FE must be accounted exactly.
+     */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
+    public static void mobGeneratorBufferGrowsToOneOperation(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        helper.assertTrue(be.cardSlot().insertItem(0, MobCardItem.create(EntityType.EVOKER), false).isEmpty(), "evoker card rejected");
+        int base = be.energy().baseCapacity();
+        int cost = be.energyPerOperation();
+        helper.assertTrue(cost > base, "test setup: cost " + cost + " FE should exceed the " + base + " FE base buffer");
+        be.experience().setExperience(be.experience().getCapacity());
+        be.tickServer(helper.getLevel());
+        helper.assertTrue(be.energy().getMaxEnergyStored() >= cost, "buffer did not grow: " + be.energy().getMaxEnergyStored());
+        IEnergyStorage input = helper.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, abs(helper, MACHINE), Direction.SOUTH);
+        helper.assertTrue(input != null && input.getMaxEnergyStored() >= cost, "external networks see the old capacity");
+        be.energy().setEnergy(cost);
+        helper.succeedWhen(() -> {
+            helper.assertTrue(be.statistics().operations() >= 1, "no operation with a grown buffer");
+            helper.assertValueEqual(be.statistics().energyConsumed(), be.statistics().operations() * (long) cost, "FE consumed");
+            helper.assertValueEqual(be.energy().getEnergyStored(), (int) (cost - be.statistics().energyConsumed()), "stored FE");
+        });
+    }
+
+    /** Removing the expensive card shrinks the buffer back without discarding stored FE. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void mobGeneratorBufferShrinkKeepsEnergy(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        be.cardSlot().insertItem(0, MobCardItem.create(EntityType.EVOKER), false);
+        be.tickServer(helper.getLevel());
+        be.energy().setEnergy(11_000);
+        be.cardSlot().extractItem(0, 1, false);
+        be.tickServer(helper.getLevel());
+        helper.assertValueEqual(be.energy().capacity(), be.energy().baseCapacity(), "capacity after removing the card");
+        helper.assertValueEqual(be.energy().getEnergyStored(), 11_000, "stored FE after the buffer shrank");
+        helper.assertValueEqual(be.energy().getMaxEnergyStored(), 11_000, "reported max is never below stored FE");
+        helper.assertValueEqual(be.energy().receiveEnergy(100, false), 0, "FE accepted above capacity");
+        helper.succeed();
+    }
+
+    /** ENERGY_BUFFER_TOO_SMALL only above Balance.MAX_OPERATION_ENERGY; nothing is consumed. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void mobGeneratorReportsCostAboveHardCap(GameTestHelper helper) {
+        int saved = Balance.mobEnergyPerKill[0];
+        Balance.mobEnergyPerKill[0] = 20_000_000; // x 10 (evoker) = 200,000,000 FE, above the 100,000,000 cap
+        try {
+            MobLootGeneratorBlockEntity be = mobGenerator(helper);
+            be.cardSlot().insertItem(0, MobCardItem.create(EntityType.EVOKER), false);
+            be.experience().setExperience(be.experience().getCapacity());
+            be.energy().setEnergy(Balance.MAX_OPERATION_ENERGY);
+            int xp0 = be.experience().getExperience();
+            be.tickServer(helper.getLevel());
+            helper.assertValueEqual(be.status(), MachineStatus.ENERGY_BUFFER_TOO_SMALL, "status");
+            helper.assertValueEqual(be.energy().getEnergyStored(), Balance.MAX_OPERATION_ENERGY, "stored FE");
+            helper.assertValueEqual(be.experience().getExperience(), xp0, "stored XP");
+        } finally {
+            Balance.mobEnergyPerKill[0] = saved;
+        }
+        helper.succeed();
+    }
+
+    // ---- Mob Card wear ----------------------------------------------------------------------------------
+
+    /** Wear grows by one per simulated kill, only with successful operations, and never resets progress. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 300)
+    public static void mobCardWearIsCommittedPerKill(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        insertZombieCard(helper, be);
+        be.upgrades().insertItem(UpgradeType.QUANTITY.slot(), new ItemStack(ModItems.card(UpgradeType.QUANTITY, 1).get()), false);
+        be.experience().setExperience(be.experience().getCapacity());
+        be.energy().setEnergy(be.energy().getMaxEnergyStored());
+        int kills = be.modifiers().attempts();
+        helper.assertTrue(kills > 1, "test setup: Quantity Card should add kills");
+        helper.succeedWhen(() -> {
+            long ops = be.statistics().operations();
+            helper.assertTrue(ops >= 3, "waiting for three operations");
+            helper.assertValueEqual((long) be.cardWear(), ops * kills, "card wear");
+            helper.assertTrue(be.mob().isPresent(), "card lost");
+        });
+    }
+
+    /** A failed operation (output full) adds no wear. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void mobCardWearUnchangedOnFailure(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        insertZombieCard(helper, be);
+        be.experience().setExperience(500);
+        be.energy().setEnergy(be.energy().getMaxEnergyStored());
+        for (int i = 0; i < be.output().getSlots(); i++) be.output().setStackInSlot(i, new ItemStack(Items.COBBLESTONE, 64));
+        helper.runAfterDelay(60, () -> {
+            helper.assertValueEqual(be.cardWear(), 0, "wear after failed operations");
+            helper.succeed();
+        });
+    }
+
+    /** A corrupted card yields only Rotten Flesh (one per kill) at twice the FE, and still works. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 300)
+    public static void corruptedMobCardYieldsRottenFleshAtDoubleCost(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        helper.assertTrue(be.cardSlot().insertItem(0, MobCardItem.create(EntityType.COW), false).isEmpty(), "cow card rejected");
+        int freshCost = be.energyPerOperation();
+        CardWear.setWear(be.cardSlot().getStackInSlot(0), CardWear.maxWear());
+        helper.assertValueEqual(be.energyPerOperation(), (int) Math.ceil(freshCost * (1 + Balance.MOB_CARD_DECAY_ENERGY) - 1e-6),
+                "FE per operation of a corrupted card");
+        be.experience().setExperience(be.experience().getCapacity());
+        be.energy().setEnergy(be.energy().getMaxEnergyStored());
+        helper.succeedWhen(() -> {
+            long ops = be.statistics().operations();
+            helper.assertTrue(ops >= 3, "waiting for three operations");
+            int flesh = itemCount(be.output());
+            helper.assertValueEqual((long) flesh, ops * be.modifiers().attempts(), "one Rotten Flesh per kill");
+            for (int i = 0; i < be.output().getSlots(); i++) {
+                ItemStack stack = be.output().getStackInSlot(i);
+                helper.assertTrue(stack.isEmpty() || stack.is(Items.ROTTEN_FLESH), "corrupted card produced " + stack);
+            }
+            helper.assertValueEqual(be.cardWear(), CardWear.maxWear(), "wear saturates");
+        });
+    }
+
+    /** Simulation with partial decay: some kills are Rotten Flesh, the rest keep their loot. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void decayingCardMixesRottenFleshAndLoot(GameTestHelper helper) {
+        MobLootSimulator.Outcome outcome = MobLootSimulator.simulate(helper.getLevel(), abs(helper, MACHINE), EntityType.COW,
+                400, 0, LootFilter.ALL, new SimulatedEntityCache(), MobSimulationData.of(EntityType.COW), 0.5);
+        helper.assertTrue(outcome.result() != null, "cow cannot be simulated");
+        int corrupted = outcome.corruptedKills();
+        helper.assertTrue(corrupted > 120 && corrupted < 280, "decay 0.5 corrupted " + corrupted + " of 400 kills");
+        helper.assertValueEqual(count(outcome.result().items(), Items.ROTTEN_FLESH), corrupted, "rotten flesh");
+        helper.assertTrue(count(outcome.result().items(), Items.BEEF) > 0, "no beef from the intact kills");
+        helper.succeed();
+    }
+
+    // ---- Hybrid loot ------------------------------------------------------------------------------------
+
+    private static ResourceKey<LootTable> table(String path) {
+        return ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.withDefaultNamespace(path));
+    }
+
+    private static MobSimulationData withSupplemental(MobSimulationData.SupplementalMode mode, ResourceKey<LootTable> key) {
+        return new MobSimulationData(8, 1.0, 2, Optional.empty(),
+                Optional.of(new MobSimulationData.Supplemental(mode, key)), Optional.empty());
+    }
+
+    private static MobLootSimulator.Outcome simulateWith(GameTestHelper helper, EntityType<?> type, int kills, MobSimulationData data) {
+        return MobLootSimulator.simulate(helper.getLevel(), abs(helper, MACHINE), type, kills, 0, LootFilter.ALL,
+                new SimulatedEntityCache(), data, 0);
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void hybridLootNativeVanillaTable(GameTestHelper helper) {
+        MobLootSimulator.Outcome outcome = simulateWith(helper, EntityType.COW, 20, new MobSimulationData(8, 1.0));
+        helper.assertValueEqual(outcome.source(), HybridLootResolver.Source.NATIVE, "source");
+        helper.assertTrue(count(outcome.result().items(), Items.LEATHER) + count(outcome.result().items(), Items.BEEF) > 0, "no cow drops");
+        helper.succeed();
+    }
+
+    /** Goat: its table exists but has no pools. Valid empty result, not a fallback and not an error. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void hybridLootValidEmptyTable(GameTestHelper helper) {
+        MobSimulationData data = new MobSimulationData(8, 1.0, 1, Optional.empty(), Optional.empty(), Optional.of(table("entities/cow")));
+        MobLootSimulator.Outcome outcome = simulateWith(helper, EntityType.GOAT, 20, data);
+        helper.assertTrue(outcome.result() != null, "goat was rejected");
+        helper.assertValueEqual(outcome.source(), HybridLootResolver.Source.NATIVE, "source (fallback must not trigger)");
+        helper.assertTrue(outcome.result().items().isEmpty(), "goat produced " + outcome.result().items());
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void hybridLootSupplementalAdd(GameTestHelper helper) {
+        MobLootSimulator.Outcome outcome = simulateWith(helper, EntityType.ZOMBIE, 40,
+                withSupplemental(MobSimulationData.SupplementalMode.ADD, table("entities/cow")));
+        helper.assertValueEqual(outcome.source(), HybridLootResolver.Source.NATIVE_AND_SUPPLEMENTAL, "source");
+        List<ItemStack> items = outcome.result().items();
+        helper.assertTrue(count(items, Items.ROTTEN_FLESH) > 0, "native zombie loot missing");
+        helper.assertTrue(count(items, Items.BEEF) > 0, "supplemental loot missing");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void hybridLootSupplementalReplace(GameTestHelper helper) {
+        MobLootSimulator.Outcome outcome = simulateWith(helper, EntityType.ZOMBIE, 40,
+                withSupplemental(MobSimulationData.SupplementalMode.REPLACE, table("entities/cow")));
+        helper.assertValueEqual(outcome.source(), HybridLootResolver.Source.SUPPLEMENTAL_ONLY, "source");
+        List<ItemStack> items = outcome.result().items();
+        helper.assertValueEqual(count(items, Items.ROTTEN_FLESH), 0, "native loot rolled despite replace");
+        helper.assertTrue(count(items, Items.BEEF) > 0, "replacement loot missing");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void hybridLootMissingTableIsReported(GameTestHelper helper) {
+        MobLootSimulator.Outcome outcome = simulateWith(helper, EntityType.ZOMBIE, 5,
+                withSupplemental(MobSimulationData.SupplementalMode.ADD, table("entities/does_not_exist")));
+        helper.assertTrue(outcome.result() == null, "simulation ran with a missing supplemental table");
+        helper.assertValueEqual(outcome.problem(), HybridLootResolver.Problem.SUPPLEMENTAL_MISSING, "problem");
+        helper.succeed();
+    }
+
+    /** The modded-mob path is the same code as vanilla (any namespace); the default data is tier II / 8 XP / 1.0x. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void unlistedMobUsesTierTwoDefaults(GameTestHelper helper) {
+        MobSimulationData data = MobSimulationData.of(EntityType.BAT);
+        helper.assertValueEqual(data.tier(), MobSimulationData.DEFAULT_TIER, "tier");
+        helper.assertValueEqual(data.xpCost(), Balance.defaultXpPerKill, "xp");
+        helper.assertValueEqual(data.energyMultiplier(), 1.0, "energy multiplier");
+        helper.assertTrue(data.supplemental().isEmpty(), "a supplemental table was added automatically");
+        helper.succeed();
+    }
+
+    // ---- Card automation --------------------------------------------------------------------------------
+
+    /** XP Input faces load a Mob Card into an empty card slot and never give it back to automation. */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void mobCardInsertedThroughXpInputFace(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        IItemHandler face = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, abs(helper, MACHINE), Direction.EAST);
+        helper.assertTrue(face != null, "no item handler on the XP Input face");
+        helper.assertValueEqual(face.getSlots(), 2, "slots on the XP Input face");
+        ItemStack card = MobCardItem.create(EntityType.ZOMBIE);
+        helper.assertTrue(face.insertItem(1, card.copy(), false).isEmpty(), "card rejected");
+        helper.assertValueEqual(be.mob().orElse(null), EntityType.ZOMBIE, "installed mob");
+        helper.assertValueEqual(face.insertItem(1, MobCardItem.create(EntityType.COW), false).getCount(), 1, "second card accepted");
+        helper.assertTrue(face.extractItem(1, 1, false).isEmpty(), "card extracted by automation");
+        helper.assertValueEqual(face.insertItem(1, new ItemStack(Items.EXPERIENCE_BOTTLE), false).getCount(), 1, "bottle in card slot");
+        IItemHandler output = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, abs(helper, MACHINE), Direction.DOWN);
+        for (int i = 0; i < output.getSlots(); i++) helper.assertTrue(!output.getStackInSlot(i).is(ModItems.MOB_CARD.get()), "card visible on output");
+        helper.succeed();
+    }
+
+    // ---- Orb collection (P3-02: an oversized orb must not stop the scan) -------------------------------
+
+    private static ExperienceOrb orb(GameTestHelper helper, int value) {
+        BlockPos pos = abs(helper, MACHINE);
+        ExperienceOrb orb = new ExperienceOrb(helper.getLevel(), pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, value);
+        orb.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        helper.getLevel().addFreshEntity(orb);
+        return orb;
+    }
+
+    private static MobLootGeneratorBlockEntity orbCollector(GameTestHelper helper, int stored) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        be.upgrades().insertItem(UpgradeType.RANGE.slot(), new ItemStack(ModItems.card(UpgradeType.RANGE, 1).get()), false);
+        be.experience().setExperience(stored);
+        return be;
+    }
+
+    private static void finishOrbTest(GameTestHelper helper, int expectedXp, List<ExperienceOrb> mustRemain, List<ExperienceOrb> mustBeGone) {
+        helper.runAfterDelay(Balance.ORB_COLLECT_INTERVAL_TICKS * 2 + 5, () -> {
+            MobLootGeneratorBlockEntity be = helper.getBlockEntity(MACHINE);
+            helper.assertValueEqual(be.experience().getExperience(), expectedXp, "stored XP");
+            for (ExperienceOrb o : mustBeGone) helper.assertTrue(o.isRemoved(), "orb of " + o.getValue() + " still in the world");
+            for (ExperienceOrb o : mustRemain) {
+                helper.assertFalse(o.isRemoved(), "orb of " + o.getValue() + " was destroyed without being stored");
+                o.discard();
+            }
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void orbsSmallOrbIsAbsorbed(GameTestHelper helper) {
+        orbCollector(helper, 0);
+        finishOrbTest(helper, 5, List.of(), List.of(orb(helper, 5)));
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void orbsExactFill(GameTestHelper helper) {
+        int cap = Balance.MOB_XP_CAPACITY[0];
+        orbCollector(helper, cap - 10);
+        finishOrbTest(helper, cap, List.of(), List.of(orb(helper, 10)));
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void orbsOversizedThenSmall(GameTestHelper helper) {
+        int cap = Balance.MOB_XP_CAPACITY[0];
+        orbCollector(helper, cap - 5);
+        ExperienceOrb big = orb(helper, 50);
+        ExperienceOrb small = orb(helper, 3);
+        finishOrbTest(helper, cap - 2, List.of(big), List.of(small));
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void orbsFullTankLeavesOrbs(GameTestHelper helper) {
+        int cap = Balance.MOB_XP_CAPACITY[0];
+        orbCollector(helper, cap);
+        finishOrbTest(helper, cap, List.of(orb(helper, 2)), List.of());
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void orbsMixedSizes(GameTestHelper helper) {
+        int cap = Balance.MOB_XP_CAPACITY[0];
+        orbCollector(helper, cap - 15);
+        ExperienceOrb big = orb(helper, 20);
+        ExperienceOrb a = orb(helper, 7);
+        ExperienceOrb b = orb(helper, 7);
+        // Whatever the scan order (and even if the two 7s merge), 14 points fit and the 20 stays.
+        helper.runAfterDelay(Balance.ORB_COLLECT_INTERVAL_TICKS * 2 + 5, () -> {
+            MobLootGeneratorBlockEntity be = helper.getBlockEntity(MACHINE);
+            helper.assertValueEqual(be.experience().getExperience(), cap - 1, "stored XP");
+            helper.assertTrue(a.isRemoved() && b.isRemoved(), "small orbs left behind");
+            helper.assertFalse(big.isRemoved(), "the 20-point orb was destroyed without being stored");
+            big.discard();
+            helper.succeed();
+        });
+    }
+
+    // ---- Card Restorer ----------------------------------------------------------------------------------
+
+    private static CardRestorerBlockEntity restorer(GameTestHelper helper) {
+        helper.setBlock(MACHINE, ModBlocks.CARD_RESTORER.get());
+        return helper.getBlockEntity(MACHINE);
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
+    public static void cardRestorerRepairsForExactEnergy(GameTestHelper helper) {
+        CardRestorerBlockEntity be = restorer(helper);
+        ItemStack card = MobCardItem.create(EntityType.ZOMBIE);
+        CardWear.setWear(card, 100);
+        long cost = CardRestorerBlockEntity.costPerWear(card);
+        be.energy().setEnergy(be.energy().getMaxEnergyStored());
+        int fe0 = be.energy().getEnergyStored();
+        helper.assertTrue(be.inventory().insertItem(CardRestorerBlockEntity.INPUT, card, false).isEmpty(), "card rejected");
+        helper.succeedWhen(() -> {
+            ItemStack out = be.inventory().getStackInSlot(CardRestorerBlockEntity.OUTPUT);
+            helper.assertTrue(!out.isEmpty(), "card not in the output yet");
+            helper.assertValueEqual(CardWear.wear(out), 0, "wear after repair");
+            helper.assertValueEqual(MobCardItem.getEntityType(out).orElse(null), EntityType.ZOMBIE, "mob kept");
+            helper.assertTrue(be.inventory().getStackInSlot(CardRestorerBlockEntity.INPUT).isEmpty(), "input not empty");
+            helper.assertValueEqual((long) (fe0 - be.energy().getEnergyStored()), 100 * cost, "FE spent");
+        });
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void cardRestorerWithoutEnergyChangesNothing(GameTestHelper helper) {
+        CardRestorerBlockEntity be = restorer(helper);
+        ItemStack card = MobCardItem.create(EntityType.ZOMBIE);
+        CardWear.setWear(card, 500);
+        be.inventory().insertItem(CardRestorerBlockEntity.INPUT, card, false);
+        helper.runAfterDelay(20, () -> {
+            helper.assertValueEqual(be.status(), CardRestorerStatus.NO_ENERGY, "status");
+            helper.assertValueEqual(CardWear.wear(be.inventory().getStackInSlot(CardRestorerBlockEntity.INPUT)), 500, "wear");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void cardRestorerAutomationNeverStealsTheInput(GameTestHelper helper) {
+        CardRestorerBlockEntity be = restorer(helper);
+        IItemHandler handler = helper.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, abs(helper, MACHINE), Direction.UP);
+        helper.assertTrue(handler != null, "no item handler");
+        ItemStack card = MobCardItem.create(EntityType.ZOMBIE);
+        CardWear.setWear(card, 50);
+        helper.assertTrue(handler.insertItem(CardRestorerBlockEntity.INPUT, card, false).isEmpty(), "card rejected by automation");
+        helper.assertTrue(handler.extractItem(CardRestorerBlockEntity.INPUT, 1, false).isEmpty(), "input extracted by automation");
+        helper.assertValueEqual(handler.insertItem(CardRestorerBlockEntity.INPUT, new ItemStack(Items.STONE), false).getCount(), 1, "stone accepted");
+        helper.succeed();
+    }
+
+    /** Regression (ISSUE P1-01, XP side): an XP cost per operation above the tank capacity is reported, not "Not enough experience". */
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)
+    public static void mobGeneratorReportsXpTankTooSmall(GameTestHelper helper) {
+        MobLootGeneratorBlockEntity be = mobGenerator(helper);
+        // The bat has no ultraloot:mob_simulation entry, so it uses Balance.defaultXpPerKill (no other test does).
+        int savedDefault = Balance.defaultXpPerKill;
+        Balance.defaultXpPerKill = be.experience().getCapacity() + 1;
+        try {
+            helper.assertTrue(be.cardSlot().insertItem(0, MobCardItem.create(EntityType.BAT), false).isEmpty(), "bat card rejected");
+            be.energy().setEnergy(be.energy().getMaxEnergyStored());
+            be.experience().setExperience(be.experience().getCapacity());
+            be.tickServer(helper.getLevel());
+            helper.assertValueEqual(be.status(), MachineStatus.XP_TANK_TOO_SMALL, "status");
+            helper.assertValueEqual(be.experience().getExperience(), be.experience().getCapacity(), "stored XP");
+        } finally {
+            Balance.defaultXpPerKill = savedDefault;
+        }
+        helper.succeed();
     }
 
     @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 100)

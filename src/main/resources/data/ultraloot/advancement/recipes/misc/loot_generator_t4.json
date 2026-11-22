@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ultraloot:loot_generator_t4"
+      }
+    },
+    "has_stellar_circuit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:stellar_circuit"
+          }
+        ]
+      }
+    },
+    "has_loot_generator_t3": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:loot_generator_t3"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stellar_circuit",
+      "has_loot_generator_t3"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ultraloot:loot_generator_t4"
+    ]
+  }
+}

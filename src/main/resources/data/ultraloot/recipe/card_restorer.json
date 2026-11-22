@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "ultraloot:logic_circuit"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "F": {
+      "item": "ultraloot:machine_frame"
+    },
+    "A": {
+      "item": "minecraft:anvil"
+    }
+  },
+  "pattern": [
+    "IRI",
+    "CFC",
+    "IAI"
+  ],
+  "result": {
+    "id": "ultraloot:card_restorer",
+    "count": 1
+  }
+}

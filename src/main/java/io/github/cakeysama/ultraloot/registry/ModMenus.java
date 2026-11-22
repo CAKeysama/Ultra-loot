@@ -1,6 +1,7 @@
 package io.github.cakeysama.ultraloot.registry;
 
 import io.github.cakeysama.ultraloot.UltraLoot;
+import io.github.cakeysama.ultraloot.menu.CardRestorerMenu;
 import io.github.cakeysama.ultraloot.menu.LootGeneratorMenu;
 import io.github.cakeysama.ultraloot.menu.MobLootGeneratorMenu;
 import net.minecraft.core.registries.Registries;
@@ -16,6 +17,8 @@ public final class ModMenus {
             REGISTER.register("loot_generator", () -> IMenuTypeExtension.create(LootGeneratorMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<MobLootGeneratorMenu>> MOB_LOOT_GENERATOR =
             REGISTER.register("mob_loot_generator", () -> IMenuTypeExtension.create(MobLootGeneratorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<CardRestorerMenu>> CARD_RESTORER =
+            REGISTER.register("card_restorer", () -> IMenuTypeExtension.create(CardRestorerMenu::new));
 
     private ModMenus() {}
 }

@@ -58,7 +58,7 @@ docs.neoforged.net (1.21.1) and the source code of other mods. Each claim below 
 |---|---|---|
 | Minecraft | 1.21.1 | release, no snapshots |
 | NeoForge | 21.1.267 | newest `21.1.x` on maven.neoforged.net (checked 2026-11-19) |
-| Java | 21 | required by MC 1.21.x; local JDK `C:/Users/conta/.jdks/jdk-21.0.13+9` |
+| Java | 21 | required by MC 1.21.x; found by Gradle toolchain detection / foojay (no machine-specific path in the repo since 0.1.1) |
 | ModDevGradle | 2.0.148 | newest `2.0.x` |
 | Gradle wrapper | 9.2.1 | |
 | Parchment | 2024.11.17 for 1.21.1 | parameter names only |
@@ -163,6 +163,8 @@ Decided by the lead under the brief's criteria (simplicity, balance, predictabil
 | G23 | GUI sync | Server snapshot (CompoundTag) every 5 ticks, sent only when changed; C2S actions validated twice | minimal traffic, server-authoritative |
 | G24 | ACTIVE blockstate | 40-tick hysteresis | avoids block-update/light spam when FE hovers around the cost |
 | G25 | Loot Generator has no Side tab in the brief | Added a Side Configuration tab to both families | the brief requires per-face config for both machines |
+| G26 | Cost above the FE buffer / XP tank (0.1.1) | Dedicated statuses `ENERGY_BUFFER_TOO_SMALL` / `XP_TANK_TOO_SMALL`; nothing consumed, progress frozen. Buffer sizing unchanged (owner decision, docs/BALANCE.md P1-01) | keeps G2 (pay once, on success) and every number; replaces a misleading "Not enough energy" |
+| G27 | Buried Treasure cost (0.1.1) | `energy_multiplier` 2.0 → 3.5 | cheapest diamond source in the mod; floor = cheapest Tier I source (docs/BALANCE.md B-01) |
 
 ## Known technical limitations
 

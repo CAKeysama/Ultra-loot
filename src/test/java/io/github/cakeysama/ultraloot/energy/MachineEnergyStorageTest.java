@@ -1,5 +1,6 @@
 package io.github.cakeysama.ultraloot.energy;
 
+import io.github.cakeysama.ultraloot.config.Balance;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -94,11 +95,61 @@ class MachineEnergyStorageTest {
     }
 
     @Test
-    void setEnergyClamps() {
+    void setEnergyClampsNegativeAndKeepsAboveCapacity() {
         storage.setEnergy(-10);
         assertEquals(0, storage.getEnergyStored());
+        // A save written while the capacity was raised must load without losing FE.
         storage.setEnergy(CAPACITY * 3);
-        assertEquals(CAPACITY, storage.getEnergyStored());
+        assertEquals(CAPACITY * 3, storage.getEnergyStored());
+        assertEquals(CAPACITY * 3, storage.getMaxEnergyStored(), "max is never below the stored amount");
+        assertEquals(0, storage.receiveEnergy(RATE, false), "no FE accepted while above capacity");
+    }
+
+    // ---- Dynamic capacity ----
+
+    @Test
+    void baseCapacityIsKeptWhenEnough() {
+        assertTrue(storage.ensureCapacity(CAPACITY / 2));
+        assertEquals(CAPACITY, storage.capacity());
+        assertTrue(storage.ensureCapacity(0));
+        assertEquals(CAPACITY, storage.capacity());
+    }
+
+    @Test
+    void capacityGrowsToOneOperation() {
+        assertTrue(storage.ensureCapacity(CAPACITY * 4));
+        assertEquals(CAPACITY * 4, storage.capacity());
+        assertEquals(CAPACITY * 4, storage.getMaxEnergyStored());
+        storage.setEnergy(CAPACITY * 4 - 10);
+        assertEquals(10, storage.receiveEnergy(RATE, false));
+        assertTrue(storage.has(CAPACITY * 4));
+    }
+
+    @Test
+    void shrinkingNeverDiscardsStoredEnergy() {
+        storage.ensureCapacity(CAPACITY * 4);
+        storage.setEnergy(CAPACITY * 3);
+        assertTrue(storage.ensureCapacity(100));
+        assertEquals(CAPACITY, storage.capacity());
+        assertEquals(CAPACITY * 3, storage.getEnergyStored());
+        assertEquals(CAPACITY * 3, storage.getMaxEnergyStored());
+        assertEquals(0, storage.receiveEnergy(RATE, false));
+        assertTrue(storage.consume(CAPACITY * 3 - 50));
+        assertEquals(RATE, storage.receiveEnergy(RATE, false), "accepts FE again once below capacity");
+    }
+
+    @Test
+    void capacityIsCappedAndOverflowSafe() {
+        assertFalse(storage.ensureCapacity(Integer.MAX_VALUE));
+        assertEquals(CAPACITY, storage.capacity(), "a cost above the cap keeps the base capacity (no FE stranded)");
+        assertFalse(storage.ensureCapacity(Balance.MAX_OPERATION_ENERGY + 1));
+        assertEquals(CAPACITY, storage.capacity());
+        assertTrue(storage.ensureCapacity(Balance.MAX_OPERATION_ENERGY));
+        assertTrue(storage.ensureCapacity(-5));
+        assertEquals(CAPACITY, storage.capacity());
+        storage.setEnergy(Integer.MAX_VALUE);
+        assertEquals(Balance.MAX_OPERATION_ENERGY, storage.getEnergyStored());
+        assertEquals(0, storage.receiveEnergy(Integer.MAX_VALUE, false));
     }
 
     @Test
@@ -113,7 +164,7 @@ class MachineEnergyStorageTest {
     @Test
     void deserializeClampsCorruptValues() {
         storage.deserializeNBT(null, IntTag.valueOf(Integer.MAX_VALUE));
-        assertEquals(CAPACITY, storage.getEnergyStored());
+        assertEquals(Balance.MAX_OPERATION_ENERGY, storage.getEnergyStored());
         storage.deserializeNBT(null, IntTag.valueOf(-50));
         assertEquals(0, storage.getEnergyStored());
     }

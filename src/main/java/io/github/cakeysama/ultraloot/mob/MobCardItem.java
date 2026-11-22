@@ -49,6 +49,31 @@ public class MobCardItem extends Item {
                 .orElse(0xFF9A9A9A);
     }
 
+    private static final String[] TIER_NUMERALS = {"I", "II", "III"};
+
+    private static String percent(double fraction) {
+        return Long.toString(Math.round(fraction * 100));
+    }
+
+    // ---- Wear bar: hidden while new; green while intact, amber while decaying, red when corrupted. ----
+
+    @Override
+    public boolean isBarVisible(ItemStack stack) {
+        return CardWear.wear(stack) > 0;
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        return (int) Math.round(13.0 * CardWear.quality(CardWear.wear(stack)));
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack) {
+        double decay = CardWear.decay(stack);
+        if (decay <= 0) return 0x55FF55;
+        return decay < 1 ? 0xFFAA00 : 0xFF5555;
+    }
+
     @Override
     public Component getName(ItemStack stack) {
         return getEntityType(stack)
@@ -64,11 +89,26 @@ public class MobCardItem extends Item {
             return;
         }
         MobSimulationData data = MobSimulationData.of(type.get());
+        int wear = CardWear.wear(stack);
+        double decay = CardWear.decay(wear);
+        tooltip.add(Component.translatable("ultraloot.mob_card.tier", TIER_NUMERALS[Math.clamp(data.tier(), 1, 3) - 1])
+                .withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("ultraloot.mob_card.xp_cost", data.xpCost()).withStyle(ChatFormatting.GREEN));
-        if (data.energyMultiplier() != 1.0) {
-            tooltip.add(Component.translatable("ultraloot.mob_card.energy",
-                    String.format(java.util.Locale.ROOT, "%.2fx", data.energyMultiplier())).withStyle(ChatFormatting.RED));
+        double energy = data.energyMultiplier() * CardWear.energyFactor(wear);
+        if (energy != 1.0) {
+            tooltip.add(Component.translatable("ultraloot.mob_card.energy", percent(energy) + "%")
+                    .withStyle(ChatFormatting.GOLD));
         }
+        int integrity = (int) Math.round(CardWear.quality(wear) * 100);
+        ChatFormatting integrityColor = decay <= 0 ? ChatFormatting.GREEN : decay < 1 ? ChatFormatting.GOLD : ChatFormatting.RED;
+        tooltip.add(Component.translatable("ultraloot.mob_card.integrity", integrity + "%").withStyle(integrityColor));
+        if (decay >= 1) {
+            tooltip.add(Component.translatable("ultraloot.mob_card.corrupted").withStyle(ChatFormatting.RED));
+        } else if (decay > 0) {
+            tooltip.add(Component.translatable("ultraloot.mob_card.decaying", percent(decay) + "%")
+                    .withStyle(ChatFormatting.GOLD));
+        }
+        if (wear > 0) tooltip.add(Component.translatable("ultraloot.mob_card.repair_hint").withStyle(ChatFormatting.DARK_GRAY));
         if (!isSupported(type.get())) {
             tooltip.add(Component.translatable("ultraloot.mob_card.unsupported").withStyle(ChatFormatting.DARK_RED));
         }

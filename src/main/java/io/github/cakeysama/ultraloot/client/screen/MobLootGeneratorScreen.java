@@ -4,7 +4,9 @@ import io.github.cakeysama.ultraloot.UltraLoot;
 import io.github.cakeysama.ultraloot.client.screen.widget.ScrollableList;
 import io.github.cakeysama.ultraloot.config.Balance;
 import io.github.cakeysama.ultraloot.menu.MobLootGeneratorMenu;
+import io.github.cakeysama.ultraloot.machine.MachineStatus;
 import io.github.cakeysama.ultraloot.menu.TabSlot;
+import io.github.cakeysama.ultraloot.mob.CardWear;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -38,6 +40,7 @@ public class MobLootGeneratorScreen extends MachineScreen<MobLootGeneratorMenu> 
     private static final int MOB_TEXT_WIDTH = 66;
     private static final int MOB_ROWS_X = 10;
     private static final int MOB_ROWS_WIDTH = 104;
+    private static final int INTEGRITY_Y = 49;
     private static final int FILTER_X = 48;
     private static final int FILTER_Y = 95;
 
@@ -71,6 +74,30 @@ public class MobLootGeneratorScreen extends MachineScreen<MobLootGeneratorMenu> 
     @Override
     protected ScrollableList listFor(int tab) {
         return null;
+    }
+
+    private Component integrityText() {
+        return Component.literal(Math.round(CardWear.quality(menu.cardWear()) * 100) + "%");
+    }
+
+    /** Green intact, amber decaying, red corrupted (the tooltip says which in words). */
+    private int integrityColor() {
+        double decay = CardWear.decay(menu.cardWear());
+        return decay <= 0 ? GuiDraw.GOOD : decay < 1 ? GuiDraw.WARN : GuiDraw.BAD;
+    }
+
+    private List<Component> integrityTooltip() {
+        int wear = menu.cardWear();
+        double decay = CardWear.decay(wear);
+        String state = decay <= 0 ? "intact" : decay < 1 ? "decaying" : "corrupted";
+        ChatFormatting stateColor = decay <= 0 ? ChatFormatting.GREEN : decay < 1 ? ChatFormatting.GOLD : ChatFormatting.RED;
+        return List.of(Component.translatable("ultraloot.gui.card.integrity", integrityText()),
+                Component.translatable("ultraloot.gui.card.state." + state).withStyle(stateColor),
+                Component.translatable("ultraloot.gui.card.kills_left",
+                        GuiFormat.number(Math.max(0, Balance.mobCardIntegrity - wear))).withStyle(ChatFormatting.GRAY),
+                Component.translatable("ultraloot.gui.card.effects", Math.round(decay * 100) + "%",
+                        Math.round(CardWear.energyFactor(wear) * 100) + "%").withStyle(ChatFormatting.GRAY),
+                Component.translatable("ultraloot.mob_card.repair_hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     private Component mobName() {
@@ -126,6 +153,8 @@ public class MobLootGeneratorScreen extends MachineScreen<MobLootGeneratorMenu> 
             boolean supported = menu.mobSupported();
             GuiDraw.trimmed(graphics, font, Component.translatable(supported ? "ultraloot.gui.mob.supported" : "ultraloot.gui.mob.unsupported"),
                     MOB_TEXT_X, 40, MOB_TEXT_WIDTH, supported ? GuiDraw.GOOD : GuiDraw.BAD);
+            GuiDraw.trimmed(graphics, font, Component.translatable("ultraloot.gui.card.integrity", integrityText()),
+                    MOB_TEXT_X, INTEGRITY_Y, MOB_TEXT_WIDTH, integrityColor());
         }
         row(graphics, "ultraloot.gui.stat.xp_per_operation", GuiFormat.number(menu.experiencePerOperation()), MOB_ROWS_X, 58, MOB_ROWS_WIDTH);
         row(graphics, "ultraloot.gui.stat.kills", GuiFormat.number(menu.attempts()), MOB_ROWS_X, 69, MOB_ROWS_WIDTH);
@@ -205,8 +234,13 @@ public class MobLootGeneratorScreen extends MachineScreen<MobLootGeneratorMenu> 
                             .withStyle(ChatFormatting.GRAY));
         }
         if (isOver(mx, my, TEXT_X, PROGRESS_Y, TEXT_WIDTH, 9)) return progressTooltip();
-        if (statusCut && isOver(mx, my, TEXT_X, STATUS_Y - 1, TEXT_WIDTH, 9)) {
-            return List.of(Component.translatable(menu.status().translationKey()));
+        if (isOver(mx, my, TEXT_X, STATUS_Y - 1, TEXT_WIDTH, 9)) {
+            if (menu.status() == MachineStatus.NO_LOOT_SOURCE && menu.lootProblem().isPresent()) {
+                return List.of(Component.translatable(menu.status().translationKey()),
+                        Component.translatable("ultraloot.gui.loot_problem." + menu.lootProblem().get())
+                                .withStyle(ChatFormatting.GRAY));
+            }
+            if (statusCut) return List.of(Component.translatable(menu.status().translationKey()));
         }
         if (menu.mob().isPresent() && isOver(mx, my, TEXT_X, 45, TEXT_WIDTH, 9)) return mobInfo();
         return List.of();
@@ -223,6 +257,9 @@ public class MobLootGeneratorScreen extends MachineScreen<MobLootGeneratorMenu> 
         if (menu.mob().isPresent() && (isOver(mx, my, MOB_TEXT_X, 28, MOB_TEXT_WIDTH, 22)
                 || isOver(mx, my, PREVIEW_X, PREVIEW_Y, PREVIEW_W, PREVIEW_H))) {
             return mobInfo();
+        }
+        if (menu.mob().isPresent() && isOver(mx, my, MOB_TEXT_X, INTEGRITY_Y - 1, MOB_TEXT_WIDTH, 9)) {
+            return integrityTooltip();
         }
         if (isOver(mx, my, MOB_ROWS_X, 68, MOB_ROWS_WIDTH, 9)) {
             return List.of(Component.translatable("ultraloot.gui.stat.kills.desc").withStyle(ChatFormatting.GRAY));

@@ -20,7 +20,10 @@ Rolls a **loot profile** (a loot table + context) and puts the results straight 
 |---|---|---|---|---|
 | Rolls per operation | 1 | 2 | 3 | 4 |
 | Scan range (cube) | 5 | 8 | 12 | 16 |
-| E_base FE / operation | 800 | 1,600 | 3,000 | 6,000 |
+| FE per roll | 800 | 720 | 640 | 560 |
+| E_base FE / operation (rolls x FE per roll) | 800 | 1,440 | 1,920 | 2,240 |
+
+A higher tier is never less FE-efficient per roll (docs/BALANCE.md section 7.1).
 
 How it works:
 1. Every 100 ticks it scans the block entities of already-loaded chunks within range and caches every inventory
@@ -46,10 +49,25 @@ Simulates kills of the mob stored on a **Mob Card** using the mob's own loot tab
 | Simulated kills / operation | 1 | 1 | 2 | 2 |
 | XP tank (points) | 1,000 | 4,000 | 12,000 | 40,000 |
 | Max XP input / transfer | 50 | 150 | 400 | 1,000 |
-| E_base FE / operation | 1,200 | 2,400 | 4,500 | 9,000 |
+| FE per simulated kill | 1,200 | 1,080 | 960 | 840 |
+| E_base FE / operation (kills x FE per kill) | 1,200 | 1,080 | 1,920 | 1,680 |
 
-Getting a Mob Card: craft a **Blank Mob Card** and use it on a living mob (the mob is not hurt). Bosses and
-blacklisted entities can't be imprinted.
+E_base is multiplied by the mob's energy multiplier. Mobs have reward tiers I-III (shown on the card): tier I mobs
+(chickens, cows, zombies...) are cheap, tier III mobs (blazes, evokers, shulkers...) cost more FE and XP per kill.
+Full table: docs/BALANCE.md section 7.3.
+
+Getting a Mob Card: craft a **Blank Mob Card** and use it on a living mob (the mob is not hurt). Bosses,
+blacklisted entities and mobs whose loot cannot be resolved can't be imprinted. A Mob Card can be inserted by hand
+(Mob Configuration tab) or by automation through an **XP Input** face when the card slot is empty; automation can
+never take the card out.
+
+### Card wear
+
+Every simulated kill wears the card by 1 (only when the operation succeeds). A card stays intact for 2,048 kills,
+then decays over the next 1,024: each kill has a growing chance to yield **Rotten Flesh** instead of the mob's loot,
+and the FE cost rises up to 2x. A fully corrupted card keeps working but only produces Rotten Flesh; it never breaks.
+The card shows a durability bar and its integrity in the tooltip and in the Mob Configuration tab. Repair it in a
+**Card Restorer**. Both numbers are in the server config (`mobCard.integrity`, `mobCard.decaySpan`).
 
 Getting XP into the machine:
 - **XP slot** (Overview tab): Bottles o' Enchanting (7 points each) or a filled **Experience Capsule**
@@ -62,12 +80,39 @@ Output: take items by hand (Inventory tab) and/or let **Item Output** faces push
 10 ticks (up to 64 items per face) — both work at the same time. Pipes can also pull from Item Output faces.
 If a whole operation's drops don't fit, the machine pauses ("Output is full") without consuming anything.
 
+### When the cost is larger than the machine
+
+FE (and XP) is paid in one piece when an operation succeeds. Since 0.2.0 the FE buffer grows automatically to hold
+one operation when the tier capacity is too small (up to 100,000,000 FE), so a card stack is never blocked by the
+FE buffer. Stored FE is never discarded when the buffer shrinks again. The XP tank does not grow: an expensive mob
+with a Quantity Card can cost more XP than a Tier I tank holds (for example an evoker, 300 XP per kill, with two
+kills). The machine then shows **"Cost exceeds XP tank"** in red, consumes nothing and resumes as soon as the cost
+fits. The Overview tab shows the cost per operation. Efficiency cards lower the FE cost. Feasibility tables:
+[docs/BALANCE.md](../BALANCE.md).
+
+### No loot table for this mob
+
+If a mob's loot cannot be resolved (no native table and no fallback, or a datapack names a table that does not
+exist) the machine shows **"No loot table for this mob"** in red; the tooltip names the reason. Nothing is consumed.
+See docs/guides/DATAPACKS.md (Hybrid loot).
+
+## Card Restorer
+
+Repairs worn Mob Cards with FE.
+
+- One input slot, one output slot, 50,000 FE buffer (grows to hold one wear point if needed), 1,000 FE/t input.
+- Each tick repairs up to 8 wear points at 40 FE x the mob's energy multiplier per point. FE is only spent on
+  points actually repaired. A zombie card at full corruption (3,072 wear) costs 73,728 FE.
+- At 0 wear the card moves to the output slot (when it is empty) and works like new.
+- Automation on every face: insert bound Mob Cards into the input, extract from the output; FE on every face.
+- Status: idle (gray), not enough energy (amber), output full (amber), repairing (cyan).
+
 Breaking a machine drops its cards and items; stored XP is released as experience orbs.
 
 ## Recipes
 
-All recipes are shaped crafting-table recipes unless noted. They have no recipe-book unlock advancements; use JEI/EMI
-or this list.
+All recipes are shaped crafting-table recipes unless noted. They unlock in the vanilla recipe book when you pick
+up a key ingredient (0.2.0).
 
 ### Components
 
@@ -83,6 +128,7 @@ or this list.
 | Blank Card (x2) | 4 paper, 1 redstone, 1 gold nugget |
 | Blank Mob Card (shapeless) | Blank Card, soul sand or soul soil, bone |
 | Experience Capsule | 1 iron ingot, 4 glass, 1 emerald, 1 redstone |
+| Ultra Loot Guide (shapeless) | 1 book, 1 redstone dust |
 
 ### Machines
 
@@ -95,6 +141,7 @@ The previous tier goes in the centre of the upgrade recipes.
 | Tier II (both) | Tier I machine, 5 gold ingots, 2 diamonds, 1 Enhanced Circuit |
 | Tier III (both) | Tier II machine, 5 emeralds, 1 Refined Circuit, 1 netherite ingot |
 | Tier IV (both) | Tier III machine, 4 shulker shells, 2 diamond blocks, 1 Stellar Circuit, 1 nether star |
+| Card Restorer | Machine Frame, Logic Circuit, 4 iron ingots, 2 copper ingots, 1 anvil (`IRI / CFC / IAI`) |
 
 ### Upgrade cards
 

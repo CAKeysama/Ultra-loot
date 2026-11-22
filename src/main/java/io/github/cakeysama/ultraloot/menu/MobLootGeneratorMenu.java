@@ -104,4 +104,14 @@ public class MobLootGeneratorMenu extends MachineMenu {
     public int outputFreeSlots() {
         return data().getInt("outputFree");
     }
+
+    public int cardWear() {
+        return data().getInt("cardWear");
+    }
+
+    /** Why the mob cannot be simulated (HybridLootResolver.Problem name, lower case), empty when it can. */
+    public Optional<String> lootProblem() {
+        String problem = data().getString("lootProblem");
+        return problem.isEmpty() ? Optional.empty() : Optional.of(problem.toLowerCase(java.util.Locale.ROOT));
+    }
 }

@@ -118,8 +118,15 @@ public final class TransactionalInserter {
         }
     }
 
-    /** Number of empty slots of a handler (used for GUI statistics). */
+    /**
+     * Number of empty slots of a handler (GUI statistics, and the Mob Loot Generator's per-tick output check).
+     * Reads the slots directly instead of copying them into a {@link VirtualInventory}.
+     */
     public static int freeSlots(IItemHandler handler) {
-        return new VirtualInventory(handler).freeSlots();
+        int free = 0;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (handler.getStackInSlot(i).isEmpty()) free++;
+        }
+        return free;
     }
 }

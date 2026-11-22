@@ -2,6 +2,8 @@ package io.github.cakeysama.ultraloot.registry;
 
 import io.github.cakeysama.ultraloot.UltraLoot;
 import io.github.cakeysama.ultraloot.experience.ExperienceCapsuleItem;
+import io.github.cakeysama.ultraloot.guide.GuideBookItem;
+import io.github.cakeysama.ultraloot.machine.CardRestorerBlockItem;
 import io.github.cakeysama.ultraloot.machine.MachineBlock;
 import io.github.cakeysama.ultraloot.machine.MachineBlockItem;
 import io.github.cakeysama.ultraloot.mob.BlankMobCardItem;
@@ -25,11 +27,18 @@ public final class ModItems {
     /** Registration order, used by the creative tab. */
     private static final List<DeferredItem<? extends Item>> ORDERED = new ArrayList<>();
 
+    /** First in the creative tab. */
+    public static final DeferredItem<GuideBookItem> GUIDE_BOOK = register("guide_book",
+            () -> new GuideBookItem(new Item.Properties().stacksTo(1)));
+
     static {
         for (DeferredBlock<MachineBlock> block : ModBlocks.allMachines()) {
             ORDERED.add(REGISTER.register(block.getId().getPath(), () -> new MachineBlockItem(block.get(), new Item.Properties())));
         }
     }
+
+    public static final DeferredItem<CardRestorerBlockItem> CARD_RESTORER = register("card_restorer",
+            () -> new CardRestorerBlockItem(ModBlocks.CARD_RESTORER.get(), new Item.Properties()));
 
     // Crafting components
     public static final DeferredItem<Item> MACHINE_FRAME = simple("machine_frame", Rarity.COMMON);

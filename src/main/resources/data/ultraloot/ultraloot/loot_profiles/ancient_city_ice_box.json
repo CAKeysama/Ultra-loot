@@ -4,5 +4,5 @@
   "category": "overworld",
   "icon": "minecraft:packed_ice",
   "min_tier": 2,
-  "energy_multiplier": 0.8
+  "energy_multiplier": 0.89
 }

@@ -37,5 +37,6 @@ cd Ultra-loot
 ./gradlew runGameTestServer    # automated in-world tests
 ```
 
-If your system Java is not 21, either set `JAVA_HOME` to a JDK 21 or add it to
-`org.gradle.java.installations.paths` in `gradle.properties`.
+Gradle finds a JDK 21 automatically (JAVA_HOME, standard install locations, or a download through the foojay
+resolver). If yours is in a non-standard folder, add it to `org.gradle.java.installations.paths` in your personal
+`~/.gradle/gradle.properties` (not the project's file, which must stay machine-independent).

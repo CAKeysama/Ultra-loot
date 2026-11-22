@@ -1,244 +1,306 @@
 {
   "values": {
     "minecraft:chicken": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
     },
     "minecraft:cow": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
+      "tier": 2,
+      "xp_cost": 10,
+      "energy_multiplier": 1.1
     },
     "minecraft:mooshroom": {
-      "xp_cost": 5,
-      "energy_multiplier": 0.8
+      "tier": 2,
+      "xp_cost": 10,
+      "energy_multiplier": 1.1
     },
     "minecraft:pig": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
-    },
-    "minecraft:sheep": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
-    },
-    "minecraft:rabbit": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.8
-    },
-    "minecraft:goat": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
-    },
-    "minecraft:horse": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
-    },
-    "minecraft:donkey": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
-    },
-    "minecraft:mule": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
-    },
-    "minecraft:llama": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
-    },
-    "minecraft:trader_llama": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
-    },
-    "minecraft:hoglin": {
-      "xp_cost": 10,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:strider": {
-      "xp_cost": 6,
-      "energy_multiplier": 0.9
-    },
-    "minecraft:panda": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.7
-    },
-    "minecraft:polar_bear": {
+      "tier": 1,
       "xp_cost": 5,
       "energy_multiplier": 0.8
     },
-    "minecraft:turtle": {
+    "minecraft:sheep": {
+      "tier": 2,
       "xp_cost": 8,
       "energy_multiplier": 1.0
     },
+    "minecraft:rabbit": {
+      "tier": 1,
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:goat": {
+      "tier": 1,
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
+    },
+    "minecraft:horse": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:donkey": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:mule": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:llama": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:trader_llama": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:hoglin": {
+      "tier": 2,
+      "xp_cost": 11,
+      "energy_multiplier": 1.15
+    },
+    "minecraft:strider": {
+      "tier": 2,
+      "xp_cost": 10,
+      "energy_multiplier": 1.1
+    },
+    "minecraft:panda": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:polar_bear": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.65
+    },
+    "minecraft:turtle": {
+      "tier": 1,
+      "xp_cost": 2,
+      "energy_multiplier": 0.55
+    },
     "minecraft:parrot": {
+      "tier": 1,
       "xp_cost": 3,
       "energy_multiplier": 0.6
     },
     "minecraft:cat": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.65
     },
     "minecraft:ocelot": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
+      "tier": 1,
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
     },
     "minecraft:fox": {
-      "xp_cost": 3,
-      "energy_multiplier": 0.6
+      "tier": 1,
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
     },
     "minecraft:cod": {
-      "xp_cost": 2,
-      "energy_multiplier": 0.5
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.65
     },
     "minecraft:salmon": {
-      "xp_cost": 2,
-      "energy_multiplier": 0.5
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.65
     },
     "minecraft:tropical_fish": {
-      "xp_cost": 2,
-      "energy_multiplier": 0.5
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
     },
     "minecraft:pufferfish": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:dolphin": {
+      "tier": 1,
       "xp_cost": 3,
       "energy_multiplier": 0.6
     },
-    "minecraft:dolphin": {
-      "xp_cost": 6,
+    "minecraft:squid": {
+      "tier": 1,
+      "xp_cost": 5,
       "energy_multiplier": 0.8
     },
-    "minecraft:squid": {
+    "minecraft:glow_squid": {
+      "tier": 2,
+      "xp_cost": 12,
+      "energy_multiplier": 1.2
+    },
+    "minecraft:drowned": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:guardian": {
+      "tier": 2,
+      "xp_cost": 9,
+      "energy_multiplier": 1.05
+    },
+    "minecraft:elder_guardian": {
+      "tier": 3,
+      "xp_cost": 102,
+      "energy_multiplier": 3.6
+    },
+    "minecraft:zombie": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:husk": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:zombie_villager": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:zombie_horse": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
+    "minecraft:skeleton": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.75
+    },
+    "minecraft:stray": {
+      "tier": 1,
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:bogged": {
+      "tier": 1,
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
+    },
+    "minecraft:skeleton_horse": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.65
+    },
+    "minecraft:spider": {
+      "tier": 1,
       "xp_cost": 4,
       "energy_multiplier": 0.7
     },
-    "minecraft:glow_squid": {
-      "xp_cost": 6,
-      "energy_multiplier": 0.9
-    },
-    "minecraft:drowned": {
-      "xp_cost": 8,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:guardian": {
-      "xp_cost": 20,
-      "energy_multiplier": 1.6
-    },
-    "minecraft:elder_guardian": {
-      "xp_cost": 120,
-      "energy_multiplier": 4.0
-    },
-    "minecraft:zombie": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:husk": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:zombie_villager": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:zombie_horse": {
-      "xp_cost": 6,
-      "energy_multiplier": 0.8
-    },
-    "minecraft:skeleton": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:stray": {
-      "xp_cost": 8,
-      "energy_multiplier": 1.1
-    },
-    "minecraft:bogged": {
-      "xp_cost": 8,
-      "energy_multiplier": 1.1
-    },
-    "minecraft:skeleton_horse": {
-      "xp_cost": 6,
-      "energy_multiplier": 0.8
-    },
-    "minecraft:spider": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
-    },
     "minecraft:cave_spider": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.7
     },
     "minecraft:creeper": {
-      "xp_cost": 8,
-      "energy_multiplier": 1.1
+      "tier": 1,
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
     },
     "minecraft:slime": {
-      "xp_cost": 6,
-      "energy_multiplier": 1.0
+      "tier": 1,
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
     },
     "minecraft:silverfish": {
-      "xp_cost": 4,
-      "energy_multiplier": 0.6
+      "tier": 1,
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
     },
     "minecraft:phantom": {
-      "xp_cost": 10,
-      "energy_multiplier": 1.2
+      "tier": 1,
+      "xp_cost": 5,
+      "energy_multiplier": 0.8
     },
     "minecraft:witch": {
-      "xp_cost": 15,
-      "energy_multiplier": 1.4
+      "tier": 3,
+      "xp_cost": 25,
+      "energy_multiplier": 1.8
     },
     "minecraft:vindicator": {
-      "xp_cost": 14,
-      "energy_multiplier": 1.3
+      "tier": 2,
+      "xp_cost": 11,
+      "energy_multiplier": 1.15
     },
     "minecraft:evoker": {
-      "xp_cost": 60,
-      "energy_multiplier": 3.0
+      "tier": 3,
+      "cost_exception": "Totem of Undying (value 127.5/kill) is far above the Tier III band; priced at the band cap's ~96 FE per value point instead of capping it",
+      "xp_cost": 300,
+      "energy_multiplier": 10.0
     },
     "minecraft:ravager": {
-      "xp_cost": 30,
-      "energy_multiplier": 2.0
+      "tier": 3,
+      "xp_cost": 25,
+      "energy_multiplier": 1.8
     },
     "minecraft:breeze": {
-      "xp_cost": 30,
-      "energy_multiplier": 2.0
+      "tier": 3,
+      "xp_cost": 49,
+      "energy_multiplier": 2.35
     },
     "minecraft:warden": {
-      "xp_cost": 250,
-      "energy_multiplier": 6.0
+      "tier": 3,
+      "xp_cost": 93,
+      "energy_multiplier": 3.35
     },
     "minecraft:blaze": {
-      "xp_cost": 20,
-      "energy_multiplier": 1.5
-    },
-    "minecraft:ghast": {
-      "xp_cost": 24,
-      "energy_multiplier": 1.6
-    },
-    "minecraft:magma_cube": {
-      "xp_cost": 10,
+      "tier": 2,
+      "xp_cost": 12,
       "energy_multiplier": 1.2
     },
+    "minecraft:ghast": {
+      "tier": 2,
+      "xp_cost": 19,
+      "energy_multiplier": 1.55
+    },
+    "minecraft:magma_cube": {
+      "tier": 1,
+      "xp_cost": 3,
+      "energy_multiplier": 0.6
+    },
     "minecraft:wither_skeleton": {
+      "tier": 2,
+      "cost_exception": "Wither skulls gate the Nether Star needed for Tier IV machines; kept at the pre-tier cost so skull farming stays a deliberate investment",
       "xp_cost": 40,
       "energy_multiplier": 2.5
     },
     "minecraft:zombified_piglin": {
-      "xp_cost": 10,
-      "energy_multiplier": 1.2
-    },
-    "minecraft:zoglin": {
-      "xp_cost": 10,
-      "energy_multiplier": 1.0
-    },
-    "minecraft:enderman": {
-      "xp_cost": 18,
-      "energy_multiplier": 1.5
-    },
-    "minecraft:endermite": {
-      "xp_cost": 4,
+      "tier": 1,
+      "xp_cost": 3,
       "energy_multiplier": 0.6
     },
+    "minecraft:zoglin": {
+      "tier": 1,
+      "xp_cost": 4,
+      "energy_multiplier": 0.65
+    },
+    "minecraft:enderman": {
+      "tier": 2,
+      "xp_cost": 9,
+      "energy_multiplier": 1.05
+    },
+    "minecraft:endermite": {
+      "tier": 1,
+      "xp_cost": 2,
+      "energy_multiplier": 0.5
+    },
     "minecraft:shulker": {
-      "xp_cost": 50,
-      "energy_multiplier": 2.5
+      "tier": 3,
+      "xp_cost": 39,
+      "energy_multiplier": 2.1
     }
   }
 }

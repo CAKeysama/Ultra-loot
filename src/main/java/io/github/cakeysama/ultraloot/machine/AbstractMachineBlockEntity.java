@@ -74,6 +74,8 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
 
     private void tickOperation(ServerLevel level) {
         preOperationTick(level);
+        // Dynamic buffer: always large enough for one operation (cards, profile and card wear change the cost).
+        boolean fits = energy.ensureCapacity(energyPerOperation());
         if (cooldown > 0) {
             cooldown--;
             return;
@@ -84,6 +86,11 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
             return;
         }
         int cost = energyPerOperation();
+        if (!fits || cost > energy.capacity()) {
+            // FE is paid in one piece (design G2); only a cost above Balance.MAX_OPERATION_ENERGY can get here.
+            setStatus(MachineStatus.ENERGY_BUFFER_TOO_SMALL);
+            return;
+        }
         if (!energy.has(cost)) {
             setStatus(MachineStatus.NO_ENERGY);
             return;
@@ -127,6 +134,17 @@ public abstract class AbstractMachineBlockEntity extends BlockEntity implements 
 
     protected void setStatus(MachineStatus newStatus) {
         status = newStatus;
+    }
+
+    /**
+     * Marks the chunk as needing a save. Unlike the vanilla implementation this skips
+     * {@code Level#updateNeighbourForOutputSignal}: machines have no comparator output, and the machine is marked
+     * dirty every working tick (progress) and on every FE transfer, so the vanilla call would send useless
+     * neighbour notifications to adjacent cables and chests several times per tick.
+     */
+    @Override
+    public void setChanged() {
+        if (level != null) level.blockEntityChanged(worldPosition);
     }
 
     private void updateActiveState(boolean active) {

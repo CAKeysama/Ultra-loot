@@ -41,3 +41,7 @@ repo/
 
 ### Python ###
 __pycache__/
+
+### Dev-only third-party mods (Mekanism compatibility testing; never shipped) ###
+dev-mods/
+run-mekanism/

@@ -12,7 +12,13 @@ public enum MachineStatus {
     NO_MOB_CARD(false),
     INVALID_MOB(false),
     NO_XP(false),
-    OUTPUT_FULL(false);
+    OUTPUT_FULL(false),
+    /** One operation costs more FE than the tier's buffer can hold: remove cards or use a higher tier. */
+    ENERGY_BUFFER_TOO_SMALL(false),
+    /** One operation costs more XP than the tier's tank can hold: remove the Quantity Card or use a higher tier. */
+    XP_TANK_TOO_SMALL(false),
+    /** The mob has no native loot table and no fallback, or a configured supplemental/fallback table is missing. */
+    NO_LOOT_SOURCE(false);
 
     private final boolean working;
 

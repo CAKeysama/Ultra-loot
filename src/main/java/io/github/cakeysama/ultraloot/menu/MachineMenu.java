@@ -210,14 +210,15 @@ public abstract class MachineMenu extends AbstractContainerMenu {
         CompoundTag tag = new CompoundTag();
         machine.writeGuiData(tag);
         if (!tag.equals(lastSent)) {
+            CompoundTag payload = GuiSyncDelta.strip(tag, lastSent);
             lastSent = tag;
-            PacketDistributor.sendToPlayer(serverPlayer, new MachineSyncPayload(containerId, tag));
+            PacketDistributor.sendToPlayer(serverPlayer, new MachineSyncPayload(containerId, payload));
         }
     }
 
-    /** Client: receives a snapshot from {@link MachineSyncPayload}. */
+    /** Client: receives a snapshot from {@link MachineSyncPayload}; unchanged sticky parts are kept from the last one. */
     public void receiveSync(CompoundTag tag) {
-        this.syncData = tag;
+        this.syncData = GuiSyncDelta.merge(tag, syncData);
     }
 
     // ---- Client getters ------------------------------------------------------------------------------------

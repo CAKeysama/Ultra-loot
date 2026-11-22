@@ -1,6 +1,7 @@
 package io.github.cakeysama.ultraloot.registry;
 
 import io.github.cakeysama.ultraloot.UltraLoot;
+import io.github.cakeysama.ultraloot.machine.CardRestorerBlock;
 import io.github.cakeysama.ultraloot.machine.MachineBlock;
 import io.github.cakeysama.ultraloot.machine.MachineFamily;
 import io.github.cakeysama.ultraloot.machine.MachineTier;
@@ -35,6 +36,15 @@ public final class ModBlocks {
             MACHINES.put(family, byTier);
         }
     }
+
+    /** Single-tier machine that repairs worn Mob Cards with FE. */
+    public static final DeferredBlock<CardRestorerBlock> CARD_RESTORER = REGISTER.register("card_restorer",
+            () -> new CardRestorerBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(3.5f, 6.0f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .lightLevel(state -> state.getValue(MachineBlock.ACTIVE) ? 7 : 0)));
 
     public static DeferredBlock<MachineBlock> machine(MachineFamily family, MachineTier tier) {
         return MACHINES.get(family).get(tier);

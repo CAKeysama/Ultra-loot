@@ -248,9 +248,8 @@ public abstract class MachineScreen<M extends MachineMenu> extends AbstractConta
     protected boolean renderStatus(GuiGraphics graphics, int x, int y, int width) {
         MachineStatus status = menu.status();
         int color = GuiDraw.statusColor(status);
-        graphics.fill(x, y, x + 6, y + 6, 0xFF101216);
-        graphics.fill(x + 1, y + 1, x + 5, y + 5, color);
-        return GuiDraw.trimmed(graphics, font, Component.translatable(status.translationKey()), x + 9, y - 1, width - 9, color);
+        GuiDraw.statusIndicator(graphics, status, x, y - 1);
+        return GuiDraw.trimmed(graphics, font, Component.translatable(status.translationKey()), x + 10, y - 1, width - 10, color);
     }
 
     protected void renderProgress(GuiGraphics graphics, GuiSprites.Sprite fill, int x, int y, int width) {

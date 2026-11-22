@@ -1,19 +1,23 @@
-"""Generates Ultra Loot data-pack JSON into src/main/resources/data. Run from anywhere: python tools/generate_data.py"""
-import json
-import os
+"""Generates Ultra Loot data-pack JSON into src/main/resources/data. Run from anywhere: python tools/generate_data.py
 
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "resources", "data")
+Only files whose content changes are rewritten (tools/gen_common.py); `--check` lists out-of-date files without
+writing and exits with 1. Generated: loot_profiles, loot_table/generator, loot_table/blocks, the tags below, the mob
+simulation data map, recipe/ and advancement/recipes/. Everything else under data/ (e.g. structure/) is hand-made
+and never touched; the generator never deletes files.
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gen_common import Output  # noqa: E402
+
+ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "main", "resources", "data"))
 NS = "ultraloot"
-WRITTEN = []
+OUT = Output()
 
 
 def write(rel, obj):
-    path = os.path.join(ROOT, rel)
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(obj, f, indent=2)
-        f.write("\n")
-    WRITTEN.append(rel)
+    OUT.json(os.path.join(ROOT, rel), obj)
 
 
 def opt(tag):
@@ -52,7 +56,7 @@ PROFILES = [
     ("pillager_outpost", "minecraft:chests/pillager_outpost", "chest", "overworld", "minecraft:crossbow", 2, 1.3),
     ("ruined_portal", "minecraft:chests/ruined_portal", "chest", "overworld", "minecraft:crying_obsidian", 2, 1.3),
     ("shipwreck_treasure", "minecraft:chests/shipwreck_treasure", "chest", "ocean", "minecraft:emerald", 2, 1.5),
-    ("buried_treasure", "minecraft:chests/buried_treasure", "chest", "ocean", "minecraft:heart_of_the_sea", 2, 2.0),
+    ("buried_treasure", "minecraft:chests/buried_treasure", "chest", "ocean", "minecraft:heart_of_the_sea", 2, 3.5),  # BALANCE.md B-01
     ("ancient_city_ice_box", "minecraft:chests/ancient_city_ice_box", "chest", "overworld", "minecraft:packed_ice", 2, 0.8),
     ("trial_chambers_entrance", "minecraft:chests/trial_chambers/entrance", "chest", "trial_chambers", "minecraft:trial_key", 2, 1.2),
     ("trial_chambers_corridor", "minecraft:chests/trial_chambers/corridor", "chest", "trial_chambers", "minecraft:tuff_bricks", 2, 1.0),
@@ -100,10 +104,21 @@ VILLAGES = {
 for name, (icon, mult) in VILLAGES.items():
     PROFILES.append((f"village_{name}", f"minecraft:chests/village/village_{name}", "chest", "village", icon, 1, mult))
 
+# The multipliers above are design values relative to the pre-0.2 per-attempt FE (800/800/1000/1500 at Tier I-IV).
+# 0.2 makes FE per attempt fall with tier (800/720/640/560, docs/BALANCE.md), so each profile is rescaled by its
+# minimum tier to keep its FE per roll at that tier unchanged; at higher tiers it then gets cheaper.
+OLD_FE_PER_ATTEMPT = {1: 800, 2: 800, 3: 1000, 4: 1500}
+NEW_FE_PER_ATTEMPT = {1: 800, 2: 720, 3: 640, 4: 560}
+
+
+def scaled(mult, tier):
+    return round(mult * OLD_FE_PER_ATTEMPT[tier] / NEW_FE_PER_ATTEMPT[tier], 2)
+
+
 for pid, table, ctx, cat, icon, tier, mult in PROFILES:
     write(f"{NS}/ultraloot/loot_profiles/{pid}.json", {
         "loot_table": table, "context": ctx, "category": cat, "icon": icon,
-        "min_tier": tier, "energy_multiplier": mult,
+        "min_tier": tier, "energy_multiplier": scaled(mult, tier),
     })
 
 
@@ -221,7 +236,7 @@ table("void_hoard", [
 # ---------------------------------------------------------------------------------------------------------------
 # 3. Block loot tables: each machine drops itself
 # ---------------------------------------------------------------------------------------------------------------
-for m in MACHINES:
+for m in MACHINES + ["card_restorer"]:
     write(f"{NS}/loot_table/blocks/{m}.json", {
         "type": "minecraft:block",
         "pools": [{
@@ -249,7 +264,7 @@ tag(f"{NS}/tags/block/scan_blacklist.json", [
     "minecraft:lectern", "minecraft:decorated_pot", "minecraft:beacon", "minecraft:campfire", "minecraft:soul_campfire",
 ])
 machine_ids = [f"{NS}:{m}" for m in MACHINES]
-tag("minecraft/tags/block/mineable/pickaxe.json", machine_ids)
+tag("minecraft/tags/block/mineable/pickaxe.json", machine_ids + [f"{NS}:card_restorer"])
 tag("minecraft/tags/block/needs_iron_tool.json", machine_ids)
 
 tag(f"{NS}/tags/item/loot_filter/resources.json", [
@@ -291,36 +306,58 @@ tag(f"{NS}/tags/entity_type/mob_card_blacklist.json", [
 ])
 
 # ---------------------------------------------------------------------------------------------------------------
-# 5. Mob simulation data map (unlisted mobs: 8 XP per kill, 1.0x energy).
+# 5. Mob simulation data map (unlisted mobs: tier II, 8 XP per kill, 1.0x energy = the Tier II floor).
 # piglin, piglin_brute, pillager and illusioner are omitted: their 1.21.1 tables yield nothing in simulation
 # (piglin drops are equipment; the pillager bottle needs a raid captain).
 # ---------------------------------------------------------------------------------------------------------------
-MOBS = {
-    # passive / farm animals
-    "chicken": (3, 0.6), "cow": (4, 0.7), "mooshroom": (5, 0.8), "pig": (3, 0.6), "sheep": (3, 0.6),
-    "rabbit": (4, 0.8), "goat": (3, 0.6), "horse": (4, 0.7), "donkey": (4, 0.7), "mule": (4, 0.7),
-    "llama": (4, 0.7), "trader_llama": (4, 0.7), "hoglin": (10, 1.0), "strider": (6, 0.9), "panda": (4, 0.7),
-    "polar_bear": (5, 0.8), "turtle": (8, 1.0), "parrot": (3, 0.6), "cat": (3, 0.6), "ocelot": (3, 0.6),
-    "fox": (3, 0.6),
-    # water
-    "cod": (2, 0.5), "salmon": (2, 0.5), "tropical_fish": (2, 0.5), "pufferfish": (3, 0.6), "dolphin": (6, 0.8),
-    "squid": (4, 0.7), "glow_squid": (6, 0.9), "drowned": (8, 1.0),
-    "guardian": (20, 1.6), "elder_guardian": (120, 4.0),
-    # overworld hostiles
-    "zombie": (6, 1.0), "husk": (6, 1.0), "zombie_villager": (6, 1.0), "zombie_horse": (6, 0.8),
-    "skeleton": (6, 1.0), "stray": (8, 1.1), "bogged": (8, 1.1), "skeleton_horse": (6, 0.8),
-    "spider": (6, 1.0), "cave_spider": (6, 1.0), "creeper": (8, 1.1), "slime": (6, 1.0), "silverfish": (4, 0.6),
-    "phantom": (10, 1.2), "witch": (15, 1.4), "vindicator": (14, 1.3),
-    "evoker": (60, 3.0), "ravager": (30, 2.0), "breeze": (30, 2.0),
-    "warden": (250, 6.0),
-    # nether
-    "blaze": (20, 1.5), "ghast": (24, 1.6), "magma_cube": (10, 1.2), "wither_skeleton": (40, 2.5),
-    "zombified_piglin": (10, 1.2), "zoglin": (10, 1.0),
-    # end
-    "enderman": (18, 1.5), "endermite": (4, 0.6), "shulker": (50, 2.5),
+# Measured expected loot value per simulated kill (Looting 0, player kill with an iron sword, docs/BALANCE.md
+# value table; unvalued items count 1.0). Source: tools/balance/mob_ev.py run against the 1.21.1 vanilla loot tables.
+MOB_VALUE = {
+    "chicken": 3.0, "cow": 7.0, "mooshroom": 7.0, "pig": 4.0, "sheep": 5.0, "rabbit": 3.5, "goat": 0, "horse": 3.0,
+    "donkey": 3.0, "mule": 3.0, "llama": 3.0, "trader_llama": 3.0, "hoglin": 7.5, "strider": 7.0, "panda": 1.0,
+    "polar_bear": 2.0, "turtle": 0.5, "parrot": 1.5, "cat": 2.0, "ocelot": 0, "fox": 0, "cod": 2.05, "salmon": 2.05,
+    "tropical_fish": 3.05, "pufferfish": 3.05, "dolphin": 1.0, "squid": 4.0, "glow_squid": 8.0, "drowned": 1.11,
+    "guardian": 5.45, "elder_guardian": 43.39, "zombie": 1.09, "husk": 1.09, "zombie_villager": 1.09,
+    "zombie_horse": 1.0, "skeleton": 3.0, "stray": 3.5, "bogged": 3.5, "skeleton_horse": 2.0, "spider": 2.67,
+    "cave_spider": 2.67, "creeper": 4.0, "slime": 4.0, "silverfish": 0, "phantom": 4.0, "witch": 15.14,
+    "vindicator": 7.5, "evoker": 127.5, "ravager": 15.0, "breeze": 24.0, "warden": 40.0, "blaze": 8.0, "ghast": 14.0,
+    "magma_cube": 1.5, "wither_skeleton": 5.5, "zombified_piglin": 1.23, "zoglin": 2.0, "enderman": 6.0,
+    "endermite": 0, "shulker": 20.0,
 }
+# Mob tier bands (owner decision 2026-11: costs rise with reward class; docs/BALANCE.md section "Mob tiers").
+# (tier, value from, value to, (multiplier lo, hi), (xp lo, hi)); inside a band cost grows linearly with value.
+MOB_BANDS = [
+    (1, 0.0, 5.0, (0.5, 0.9), (2, 6)),
+    (2, 5.0, 15.0, (1.0, 1.6), (8, 20)),
+    (3, 15.0, 50.0, (1.8, 4.0), (25, 120)),
+]
+# Explicit, documented exceptions: (multiplier, xp, reason).
+MOB_EXCEPTIONS = {
+    "evoker": (10.0, 300, "Totem of Undying (value 127.5/kill) is far above the Tier III band; priced at the band cap's "
+                          "~96 FE per value point instead of capping it"),
+    "wither_skeleton": (2.5, 40, "Wither skulls gate the Nether Star needed for Tier IV machines; kept at the "
+                                 "pre-tier cost so skull farming stays a deliberate investment"),
+}
+
+
+def mob_entry(name):
+    value = MOB_VALUE[name]
+    tier, v0, v1, (m0, m1), (x0, x1) = next(b for b in reversed(MOB_BANDS) if value >= b[1])
+    entry = {"tier": tier}
+    if name in MOB_EXCEPTIONS:
+        mult, xp, reason = MOB_EXCEPTIONS[name]
+        entry["cost_exception"] = reason
+    else:
+        f = min(1.0, max(0.0, (value - v0) / (v1 - v0)))
+        mult = round(20 * (m0 + f * (m1 - m0))) / 20
+        xp = int(round(x0 + f * (x1 - x0) + 1e-9))
+    entry["xp_cost"] = xp
+    entry["energy_multiplier"] = mult
+    return entry
+
+
 write(f"{NS}/data_maps/entity_type/mob_simulation.json", {
-    "values": {f"minecraft:{k}": {"xp_cost": v[0], "energy_multiplier": v[1]} for k, v in MOBS.items()},
+    "values": {f"minecraft:{k}": mob_entry(k) for k in MOB_VALUE},
 })
 
 
@@ -333,12 +370,40 @@ def ing(x):
     return {"tag": x[1:]} if x.startswith("#") else {"item": x}
 
 
+def flat(values):
+    for v in values:
+        if isinstance(v, list):
+            yield from flat(v)
+        else:
+            yield v
+
+
+def unlock(name, category, ingredients):
+    """Recipe-book unlock advancement (same shape as vanilla's data generator): the recipe is granted as soon as the
+    player holds one of its key ingredients. Key ingredients are the Ultra Loot items of the recipe (an upgrade path
+    unlocks when you own the previous step); recipes made only of vanilla items unlock on any of them."""
+    ids = list(dict.fromkeys(flat(ingredients)))
+    own = [i for i in ids if i.startswith(NS + ":")]
+    keys = own or ids
+    criteria = {"has_the_recipe": {"trigger": "minecraft:recipe_unlocked", "conditions": {"recipe": f"{NS}:{name}"}}}
+    for i in keys:
+        criteria["has_" + i.split(":")[1].replace("/", "_")] = {
+            "trigger": "minecraft:inventory_changed", "conditions": {"items": [{"items": i}]}}
+    write(f"{NS}/advancement/recipes/{category}/{name}.json", {
+        "parent": "minecraft:recipes/root",
+        "criteria": criteria,
+        "requirements": [list(criteria)],
+        "rewards": {"recipes": [f"{NS}:{name}"]},
+    })
+
+
 def shaped(name, pattern, key, result, count=1, category="misc"):
     write(f"{NS}/recipe/{name}.json", {
         "type": "minecraft:crafting_shaped", "category": category,
         "key": {k: ing(v) for k, v in key.items()}, "pattern": pattern,
         "result": {"id": result, "count": count},
     })
+    unlock(name, category, list(key.values()))
 
 
 def shapeless(name, ingredients, result, count=1, category="misc"):
@@ -346,6 +411,7 @@ def shapeless(name, ingredients, result, count=1, category="misc"):
         "type": "minecraft:crafting_shapeless", "category": category,
         "ingredients": [ing(i) for i in ingredients], "result": {"id": result, "count": count},
     })
+    unlock(name, category, ingredients)
 
 
 U = lambda p: f"{NS}:{p}"  # noqa: E731
@@ -394,5 +460,9 @@ for fam in ("loot_generator", "mob_loot_generator"):
     shaped(f"{fam}_t3", ["ERE", "EME", "ENE"], {"E": M("emerald"), "R": U("refined_circuit"), "M": U(f"{fam}_t2"), "N": M("netherite_ingot")}, U(f"{fam}_t3"))
     shaped(f"{fam}_t4", ["CSC", "DMD", "CNC"], {"C": M("shulker_shell"), "S": U("stellar_circuit"), "D": M("diamond_block"), "M": U(f"{fam}_t3"), "N": M("nether_star")}, U(f"{fam}_t4"))
 
+# Card Restorer (single tier): repairs worn Mob Cards with FE.
+shapeless("guide_book", [M("book"), M("redstone")], U("guide_book"))
+shaped("card_restorer", ["IRI", "CFC", "IAI"], {"I": M("iron_ingot"), "R": U("logic_circuit"), "C": M("copper_ingot"), "F": U("machine_frame"), "A": M("anvil")}, U("card_restorer"))
+
 if __name__ == "__main__":
-    print(f"wrote {len(WRITTEN)} files")
+    OUT.report("data", ROOT)

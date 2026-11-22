@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.List;
 
@@ -40,10 +39,14 @@ public class BlankMobCardItem extends Item {
         return InteractionResult.sidedSuccess(player.level().isClientSide);
     }
 
-    /** Server only: a mob whose loot table is missing would make a card that never produces anything. */
+    /**
+     * Server only: a mob whose loot sources cannot be resolved (no native table and no fallback, or a missing
+     * configured table) would make a card that never produces anything. A native table that exists but rolls
+     * nothing is accepted (valid empty result, docs/GDD.md hybrid loot).
+     */
     private static boolean hasNoLoot(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel level)) return false;
-        return level.getServer().reloadableRegistries().getLootTable(target.getLootTable()) == LootTable.EMPTY;
+        return !MobLootSimulator.resolve(level, target, MobSimulationData.of(target.getType())).ok();
     }
 
     @Override

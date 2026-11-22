@@ -1,6 +1,6 @@
 # Ultra Loot — progress
 
-Last update: 2026-11-19 (session 1, end)
+Last update: 2026-11-22 (session 3: remediation, 0.2.0)
 
 | Phase | State |
 |---|---|
@@ -14,19 +14,45 @@ Last update: 2026-11-19 (session 1, end)
 | 7 Integration & QA | COMPLETED (architect performance review not run — agent session limit) |
 | 8 Release candidate | COMPLETED — `build/libs/ultraloot-0.1.0.jar`, not published |
 
-## Environment
-- JDK 21 (Temurin 21.0.13) at `C:/Users/conta/.jdks/jdk-21.0.13+9` (system Java is 8); also set in
-  `gradle.properties` (`org.gradle.java.installations.paths`, machine-specific).
-- Decompiled NeoForge/Minecraft sources at `C:/Users/conta/.mcsrc` for API lookups.
+## Session 2 — audit (0.1.1)
+| Phase | State |
+|---|---|
+| Discovery + dependency map | COMPLETED (docs/AUDIT.md §1) |
+| Game design / balance / engineering / QA audits | COMPLETED (docs/GDD.md, docs/BALANCE.md, docs/AUDIT.md) |
+| Fixes P1-01, P1-02, P2-01..03, P3-01, P3-08 | COMPLETED, tests green |
+| Old MinecraftServer.class test error | analysed, not reproduced (docs/AUDIT.md §6) |
+| Documentation | COMPLETED |
+| Open owner decisions | FE buffer sizing (P1-01), tier FE efficiency (B-03), meaning of "hybrid loot" |
 
+## Session 3 — remediation and owner decisions (0.2.0)
+| Phase | State |
+|---|---|
+| Owner decisions (card wear + restorer, mob tiers, hybrid loot, Mekanism test, client test) | RECORDED (GDD §3.2.x, §4) |
+| Dynamic FE buffer, tier FE efficiency, mob tiers, atomic order | COMPLETED, unit + GameTests green |
+| Hybrid loot resolver + NO_LOOT_SOURCE | COMPLETED, tests green |
+| Card wear + Card Restorer | COMPLETED, tests green |
+| P3 fixes (recipe book, orb scan, scan caches, gametest source set, generators) | COMPLETED |
+| GUI status classes + UI_UX_GUIDELINES.md | COMPLETED, checked in game (main tabs) |
+| Ultra Loot Guide (in-game book, 13 chapters) | COMPLETED, 6 unit tests, checked in game (EN + PT-BR) |
+| Docs (ARCHITECTURE, CHANGELOG 0.2.0, MACHINES, CONFIGURATION, DATAPACKS, KNOWN_LIMITATIONS, TEST_PLAN, TEST_REPORT, tests.json, README, AUDIT) | COMPLETED |
+| Client GUI + Mekanism validation (computer use) | DONE (partial): checks 18, 19 pass; 14-16 partial; GUI tab clicks blocked (mouse input did not reach the game) |
+| Independent review, clean build, final report | COMPLETED: review P2/P3 fixes applied; clean build, 173 unit, 55 GameTests green |
+
+## Environment
+- JDK 21 found through JAVA_HOME (`C:\Program Files\Java\jdk-21`, 21.0.9). `~/.jdks` no longer exists; the
+  machine-specific path was removed from `gradle.properties`.
+- Decompiled NeoForge/Minecraft sources at `C:/Users/conta/.mcsrc` for API lookups (session 1; not re-checked).
 ## Builds / tests (final)
-- `./gradlew build` — green. `./gradlew test` — 124 cases, 0 failures. `./gradlew runGameTestServer` — 31/31.
-- `./gradlew runClient` — main menu reached, no Ultra Loot asset errors. Details: `docs/TEST_REPORT.md`.
+- 0.1.1 (2026-11-20): clean build green, unit 129/129, GameTests 33/33. Details: `docs/TEST_REPORT.md`.
+- 0.2.0 (2026-11-22): `./gradlew clean build --no-build-cache` green -> `build/libs/ultraloot-0.2.0.jar`
+  (462,924 bytes, SHA-256 d4e6345b...c302); unit 173/173; `runGameTestServer` 55/55; generators `--check` clean;
+  in-game checks with Mekanism 10.7.19 (see `docs/TEST_REPORT.md`).
 
 ## Git
-- Nothing committed or pushed. All work is uncommitted in the working tree on `main`.
+- Nothing committed or pushed. All work is uncommitted in the working tree.
 
 ## Next exact steps
-1. Owner runs `./gradlew runClient` and walks the manual checklist in `docs/TEST_PLAN.md` (GUI).
-2. Independent performance/persistence review (many machines, chunk unload mid-operation).
-3. Owner decides on commit / branch / licence; then playtest balance.
+1. Owner decides on commit / branch / licence.
+2. Manual GUI clicks that could not be automated: tabs, upgrade slots, side configuration, profile selector,
+   scan list, filters, recipe book (TEST_PLAN 1-6, 17), plus hoppers on the Card Restorer.
+3. Dedicated server with two players; playtest the balance numbers (all still placeholders until played).

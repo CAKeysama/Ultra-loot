@@ -27,12 +27,20 @@ Technical / design limits of the current version. Each one is intentional or cau
 10. **Energy input rate** is limited per transfer call (tier value), not strictly per tick.
 11. **Minecraft version.** Built for 1.21.1 (the most widely used NeoForge version). NeoForge 26.1 is expected to
     become the next long-lived modding version; a port would be required.
-12. **GUI validation** was done by code review and compilation; it could not be rendered in this environment
-    (no graphical client available to the agents). See docs/TEST_REPORT.md.
-13. **Recipe book.** Recipes have no unlock advancements, so the vanilla recipe book does not list them (crafting
-    works normally; use JEI/EMI or the README recipe list).
-14. **Mobs without loot.** Mobs whose loot table is empty (e.g. piglin: its loot is equipment) cannot be imprinted.
+12. **GUI validation** is partly manual; see docs/TEST_REPORT.md for what was checked in a client and what was not.
+13. **Recipe book.** Fixed in 0.2.0: recipes unlock through recipe advancements when a key ingredient is picked up.
+14. **Mobs without loot.** Since 0.2.0 a mob whose native table exists but rolls nothing (for example the goat) is valid:
+    it can be imprinted and the machine runs, producing nothing. Only mobs with no resolvable table are refused.
 15. **Moving XP orbs.** The Range card collects orbs every 20 ticks; orbs drifting quickly through the radius between
     passes can be missed.
 16. **Not yet validated by hand.** The GUI has been compiled and smoke-loaded but not checked in-game by a person;
     no test with third-party pipes, generators or XP fluid mods has been run.
+17. **XP tank does not grow.** The FE buffer grows to one operation (resolved in 0.2.0, docs/BALANCE.md 7.2), but
+    the XP tank keeps its tier size: an expensive mob with a Quantity Card can exceed a Tier I tank (red status
+    "Cost exceeds XP tank"). An operation above 100,000,000 FE is refused ("Cost exceeds FE buffer"); no shipped
+    profile or mob reaches it.
+18. **Tier FE efficiency.** Resolved in 0.2.0: FE per roll / kill is non-increasing with tier (docs/BALANCE.md 7.1).
+19. **Card wear is per kill, not per operation.** A Quantity Card wears the card faster in real time (more kills per
+    operation). Wear numbers are placeholders until playtested.
+20. **Mekanism is a dev-only test dependency.** Ultra Loot has no compile or runtime dependency on any other mod; the
+    Mekanism 10.7.19 compatibility run uses a separate dev-only run (`runClientMekanism`); results in docs/TEST_REPORT.md.

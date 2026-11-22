@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=north": {
+      "model": "ultraloot:block/card_restorer"
+    },
+    "active=false,facing=east": {
+      "model": "ultraloot:block/card_restorer",
+      "y": 90
+    },
+    "active=false,facing=south": {
+      "model": "ultraloot:block/card_restorer",
+      "y": 180
+    },
+    "active=false,facing=west": {
+      "model": "ultraloot:block/card_restorer",
+      "y": 270
+    },
+    "active=true,facing=north": {
+      "model": "ultraloot:block/card_restorer_on"
+    },
+    "active=true,facing=east": {
+      "model": "ultraloot:block/card_restorer_on",
+      "y": 90
+    },
+    "active=true,facing=south": {
+      "model": "ultraloot:block/card_restorer_on",
+      "y": 180
+    },
+    "active=true,facing=west": {
+      "model": "ultraloot:block/card_restorer_on",
+      "y": 270
+    }
+  }
+}

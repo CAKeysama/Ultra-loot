@@ -29,7 +29,12 @@ Both families come in four tiers and accept five kinds of upgrade cards.
 - **Upgrade cards** — Speed, Quantity, Range, Efficiency and Loot, each in levels I–III. One card per category; a higher
   level replaces a lower one. Every effect goes through one modifier service:
   `E_final = E_base × M_speed × M_quantity × M_range × M_efficiency (× M_loot × profile)`, with a floor of 25 % of `E_base`.
-- **Mob Cards** — right-click a living mob with a Blank Mob Card to imprint it. The mob is unharmed.
+- **In-game guide book** — 13 chapters with crafting grids, item icons and troubleshooting, in English and Portuguese.
+- **Mob Cards** — right-click a living mob with a Blank Mob Card to imprint it. The mob is unharmed. Cards wear with
+  use (worse loot, Rotten Flesh, higher FE cost) and are repaired with FE in the **Card Restorer**.
+- **Hybrid mob loot** — the mob's native loot table, plus optional datapack ADD/REPLACE tables and a fallback for
+  mobs without a table. Mob reward tiers I–III set FE and XP costs.
+- **Dynamic FE buffer** — the buffer grows to hold one operation, so no card stack is blocked by its size.
 - **Experience input** — Bottles o' Enchanting, the Experience Capsule item, the `ultraloot:experience` block capability,
   any `c:experience` fluid (20 mB per point) and, with a Range card, nearby XP orbs.
 - **Six-face side configuration** for energy, item targets, XP input and item output.
@@ -50,6 +55,9 @@ Copy `ultraloot-<version>.jar` into the `mods/` folder of a NeoForge 1.21.1 inst
 The mod is required on both sides. See [docs/guides/INSTALLATION.md](docs/guides/INSTALLATION.md).
 
 ## Getting started
+
+Every player receives the **Ultra Loot Guide** on first join (craft another from a Book and a Redstone Dust). It
+explains every machine in 13 illustrated chapters, with real crafting grids, in English and Brazilian Portuguese.
 
 1. Craft a **Machine Frame**, a **Logic Circuit** and a **Loot Core**, then a **Loot Generator (Tier I)**.
 2. Place chests or barrels within 5 blocks, power the machine with FE through an Energy face (back and bottom by default).
@@ -72,13 +80,15 @@ Full recipe list and behaviour: [docs/guides/MACHINES.md](docs/guides/MACHINES.m
 | [Installation](docs/guides/INSTALLATION.md) | Players, servers and developers |
 | [Configuration](docs/guides/CONFIGURATION.md) | `ultraloot-server.toml` options |
 | [Known limitations](docs/KNOWN_LIMITATIONS.md) | What does not work (yet) |
+| [Game design](docs/GDD.md) | Loops, mechanics, implemented vs planned, open design questions |
+| [Balance](docs/BALANCE.md) | Formulas, measured values, expected loot per FE, proposed changes |
 
 Developer documentation: [architecture](docs/ARCHITECTURE.md), [technical decisions](docs/TECHNICAL_DECISIONS.md),
-[test plan](docs/TEST_PLAN.md), [test report](docs/TEST_REPORT.md), [asset spec](docs/ASSET_SPEC.md).
+[test plan](docs/TEST_PLAN.md), [test report](docs/TEST_REPORT.md), [audit](docs/AUDIT.md), [asset spec](docs/ASSET_SPEC.md).
 
 ## Building from source
 
-Requires JDK 21.
+Requires JDK 21 (found automatically by Gradle; no path is configured in the project).
 
 ```bash
 ./gradlew build               # JAR in build/libs/ultraloot-<version>.jar (runs unit tests)

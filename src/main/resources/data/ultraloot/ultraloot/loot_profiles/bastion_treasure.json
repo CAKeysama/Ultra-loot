@@ -4,5 +4,5 @@
   "category": "nether",
   "icon": "minecraft:netherite_scrap",
   "min_tier": 4,
-  "energy_multiplier": 3.0
+  "energy_multiplier": 8.04
 }

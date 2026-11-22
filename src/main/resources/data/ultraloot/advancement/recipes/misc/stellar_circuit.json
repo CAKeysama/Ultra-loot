@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ultraloot:stellar_circuit"
+      }
+    },
+    "has_refined_circuit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:refined_circuit"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_refined_circuit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ultraloot:stellar_circuit"
+    ]
+  }
+}

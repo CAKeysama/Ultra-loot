@@ -70,14 +70,49 @@ Data map `ultraloot:mob_simulation` on entity types. File:
 ```json
 {
   "values": {
-    "minecraft:blaze": { "xp_cost": 20, "energy_multiplier": 1.5 },
-    "mymod:frost_golem": { "xp_cost": 30 }
+    "minecraft:blaze": { "tier": 2, "xp_cost": 12, "energy_multiplier": 1.2 },
+    "mymod:frost_golem": { "tier": 3, "xp_cost": 30, "energy_multiplier": 2.0 },
+    "mymod:ice_wisp": {
+      "xp_cost": 8,
+      "supplemental": { "mode": "add", "loot_table": "mymod:extra/ice_wisp" },
+      "fallback_loot_table": "mymod:entities/generic_spirit"
+    }
   }
 }
 ```
 
-`xp_cost` = XP points per simulated kill (0-100000). `energy_multiplier` (optional, default 1) multiplies E_base.
-Mobs without an entry use `mobLootGenerator.defaultXpPerKill` (default 8) and 1.0. Data maps reload with `/reload`.
+| Field | Required | Default | Meaning |
+|---|---|---|---|
+| `xp_cost` | yes | - | XP points per simulated kill (0-100000) |
+| `energy_multiplier` | no | `1.0` | multiplies E_base (0.1-100) |
+| `tier` | no | `2` | mob reward class I-III; shown on the card. Keep costs inside the tier band (docs/BALANCE.md 7.3) |
+| `cost_exception` | no | - | text explaining why the cost is outside the band (checked by the test suite for shipped data) |
+| `supplemental` | no | - | `{ "mode": "add" \| "replace" \| "disabled", "loot_table": "<id>" }` |
+| `fallback_loot_table` | no | - | table used only when the mob has no native loot table |
+
+Mobs without an entry use `mobLootGenerator.defaultXpPerKill` (default 8), 1.0x and tier II. Data maps reload with
+`/reload`.
+
+### Hybrid loot: how the drops of one simulated kill are chosen
+
+1. **Native table first.** The mob's own loot table (vanilla or modded, whatever `Mob#getLootTable` returns) is used
+   whenever it exists. A table that exists but rolls nothing (goat, fox, silverfish...) is a valid empty result: the
+   machine runs, pays, and produces nothing. It never triggers the fallback.
+2. **Supplemental** (only when you configure it): `add` rolls the extra table on every kill in addition to the
+   primary table; `replace` rolls only the extra table; `disabled` keeps the entry for documentation with no effect.
+   Ultra Loot never adds a supplemental table by itself.
+3. **Fallback** (only when you configure it): used as the primary table when the native table does not exist.
+4. A configured table that does not exist is an error: the machine shows **No loot table for this mob** (red), the
+   tooltip says which table is missing, the server log reports it once per mob, and nothing is consumed. Blank Mob
+   Cards refuse to imprint mobs whose loot cannot be resolved.
+
+### Mob Card wear
+
+Each simulated kill wears the card by 1 (committed only with a successful operation). After
+`mobCard.integrity` kills (default 2,048) the card starts to decay over `mobCard.decaySpan` kills (default 1,024):
+each kill yields one Rotten Flesh instead of its loot with probability equal to the decay, and the FE cost rises up
+to 2x. A fully corrupted card keeps working (Rotten Flesh only) and never breaks. Repair it in a Card Restorer.
+Wear is stored in the `ultraloot:card_wear` item component.
 
 ## 3. Tags
 

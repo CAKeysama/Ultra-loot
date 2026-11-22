@@ -9,11 +9,11 @@ Ultra Loot is a NeoForge tech mod for Minecraft Java 1.21.1 (formerly codenamed 
 
 ## Build & test
 
-The machine only has Java 8 globally; a JDK 21 lives at `C:/Users/conta/.jdks/jdk-21.0.13+9`
-(also registered in `gradle.properties` via `org.gradle.java.installations.paths`).
+Needs a JDK 21. Gradle finds it through `JAVA_HOME`, standard install locations or the foojay resolver; the
+project's `gradle.properties` holds no machine-specific path (put one in `~/.gradle/gradle.properties` if needed).
+On this machine `JAVA_HOME` is `C:\Program Files\Java\jdk-21` (21.0.9).
 
 ```bash
-export JAVA_HOME="C:/Users/conta/.jdks/jdk-21.0.13+9"
 ./gradlew compileJava          # fast compile check
 ./gradlew test                 # JUnit 5 (MDG unitTest, mod loaded)
 ./gradlew runGameTestServer    # NeoForge GameTests, exits with failure count

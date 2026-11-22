@@ -1,0 +1,10 @@
+{
+  "parent": "ultraloot:block/card_restorer_base",
+  "textures": {
+    "particle": "ultraloot:block/card_restorer_side",
+    "front": "ultraloot:block/card_restorer_front_on",
+    "side": "ultraloot:block/card_restorer_side",
+    "top": "ultraloot:block/card_restorer_top",
+    "bottom": "ultraloot:block/card_restorer_bottom"
+  }
+}

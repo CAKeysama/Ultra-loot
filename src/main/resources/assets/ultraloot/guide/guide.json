@@ -1,0 +1,364 @@
+{
+  "chapters": [
+    {
+      "id": "welcome",
+      "icon": "ultraloot:guide_book",
+      "title": "ultraloot.guide.chapter.welcome",
+      "pages": [
+        {
+          "text": "ultraloot.guide.welcome.1",
+          "title": "ultraloot.guide.welcome.1.title",
+          "items": [
+            "ultraloot:loot_generator_t1",
+            "ultraloot:mob_loot_generator_t1",
+            "ultraloot:card_restorer"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.welcome.2",
+          "title": "ultraloot.guide.welcome.2.title"
+        },
+        {
+          "text": "ultraloot.guide.welcome.3",
+          "title": "ultraloot.guide.welcome.3.title",
+          "recipe": "ultraloot:guide_book"
+        }
+      ]
+    },
+    {
+      "id": "components",
+      "icon": "ultraloot:machine_frame",
+      "title": "ultraloot.guide.chapter.components",
+      "pages": [
+        {
+          "text": "ultraloot.guide.components.1",
+          "title": "ultraloot.guide.components.1.title",
+          "recipe": "ultraloot:machine_frame"
+        },
+        {
+          "text": "ultraloot.guide.components.2",
+          "title": "ultraloot.guide.components.2.title",
+          "recipe": "ultraloot:logic_circuit",
+          "items": [
+            "ultraloot:logic_circuit",
+            "ultraloot:enhanced_circuit",
+            "ultraloot:refined_circuit",
+            "ultraloot:stellar_circuit"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.components.3",
+          "title": "ultraloot.guide.components.3.title",
+          "recipe": "ultraloot:loot_core"
+        },
+        {
+          "text": "ultraloot.guide.components.4",
+          "title": "ultraloot.guide.components.4.title",
+          "recipe": "ultraloot:soul_core"
+        },
+        {
+          "text": "ultraloot.guide.components.5",
+          "title": "ultraloot.guide.components.5.title"
+        }
+      ]
+    },
+    {
+      "id": "loot_generator",
+      "icon": "ultraloot:loot_generator_t1",
+      "title": "ultraloot.guide.chapter.loot_generator",
+      "pages": [
+        {
+          "text": "ultraloot.guide.loot_generator.1",
+          "title": "ultraloot.guide.loot_generator.1.title",
+          "recipe": "ultraloot:loot_generator_t1"
+        },
+        {
+          "text": "ultraloot.guide.loot_generator.2",
+          "title": "ultraloot.guide.loot_generator.2.title",
+          "items": [
+            "ultraloot:loot_generator_t1",
+            "ultraloot:loot_generator_t2",
+            "ultraloot:loot_generator_t3",
+            "ultraloot:loot_generator_t4"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.loot_generator.3",
+          "title": "ultraloot.guide.loot_generator.3.title"
+        },
+        {
+          "text": "ultraloot.guide.loot_generator.4",
+          "title": "ultraloot.guide.loot_generator.4.title"
+        },
+        {
+          "text": "ultraloot.guide.loot_generator.5",
+          "title": "ultraloot.guide.loot_generator.5.title",
+          "recipe": "ultraloot:loot_generator_t2"
+        }
+      ]
+    },
+    {
+      "id": "profiles",
+      "icon": "minecraft:chest",
+      "title": "ultraloot.guide.chapter.profiles",
+      "pages": [
+        {
+          "text": "ultraloot.guide.profiles.1",
+          "title": "ultraloot.guide.profiles.1.title",
+          "items": [
+            "minecraft:chest",
+            "minecraft:fishing_rod",
+            "minecraft:brush",
+            "minecraft:gold_ingot"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.profiles.2",
+          "title": "ultraloot.guide.profiles.2.title"
+        },
+        {
+          "text": "ultraloot.guide.profiles.3",
+          "title": "ultraloot.guide.profiles.3.title"
+        },
+        {
+          "text": "ultraloot.guide.profiles.4",
+          "title": "ultraloot.guide.profiles.4.title",
+          "items": [
+            "ultraloot:loot_card_1",
+            "ultraloot:loot_card_2",
+            "ultraloot:loot_card_3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mob_generator",
+      "icon": "ultraloot:mob_loot_generator_t1",
+      "title": "ultraloot.guide.chapter.mob_generator",
+      "pages": [
+        {
+          "text": "ultraloot.guide.mob_generator.1",
+          "title": "ultraloot.guide.mob_generator.1.title",
+          "recipe": "ultraloot:mob_loot_generator_t1"
+        },
+        {
+          "text": "ultraloot.guide.mob_generator.2",
+          "title": "ultraloot.guide.mob_generator.2.title",
+          "items": [
+            "ultraloot:mob_loot_generator_t1",
+            "ultraloot:mob_loot_generator_t2",
+            "ultraloot:mob_loot_generator_t3",
+            "ultraloot:mob_loot_generator_t4"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.mob_generator.3",
+          "title": "ultraloot.guide.mob_generator.3.title"
+        },
+        {
+          "text": "ultraloot.guide.mob_generator.4",
+          "title": "ultraloot.guide.mob_generator.4.title",
+          "items": [
+            "minecraft:hopper",
+            "minecraft:chest"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mob_cards",
+      "icon": "ultraloot:mob_card",
+      "title": "ultraloot.guide.chapter.mob_cards",
+      "pages": [
+        {
+          "text": "ultraloot.guide.mob_cards.1",
+          "title": "ultraloot.guide.mob_cards.1.title",
+          "recipe": "ultraloot:blank_mob_card"
+        },
+        {
+          "text": "ultraloot.guide.mob_cards.2",
+          "title": "ultraloot.guide.mob_cards.2.title",
+          "items": [
+            "ultraloot:mob_card@minecraft:zombie",
+            "ultraloot:mob_card@minecraft:blaze",
+            "ultraloot:mob_card@minecraft:witch"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.mob_cards.3",
+          "title": "ultraloot.guide.mob_cards.3.title",
+          "items": [
+            "ultraloot:mob_card@minecraft:zombie",
+            "ultraloot:mob_card@minecraft:zombie#2400",
+            "ultraloot:mob_card@minecraft:zombie#2800",
+            "ultraloot:mob_card@minecraft:zombie#3072"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.mob_cards.4",
+          "title": "ultraloot.guide.mob_cards.4.title",
+          "items": [
+            "minecraft:rotten_flesh",
+            "ultraloot:card_restorer"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.mob_cards.5",
+          "title": "ultraloot.guide.mob_cards.5.title"
+        }
+      ]
+    },
+    {
+      "id": "restorer",
+      "icon": "ultraloot:card_restorer",
+      "title": "ultraloot.guide.chapter.restorer",
+      "pages": [
+        {
+          "text": "ultraloot.guide.restorer.1",
+          "title": "ultraloot.guide.restorer.1.title",
+          "recipe": "ultraloot:card_restorer"
+        },
+        {
+          "text": "ultraloot.guide.restorer.2",
+          "title": "ultraloot.guide.restorer.2.title"
+        },
+        {
+          "text": "ultraloot.guide.restorer.3",
+          "title": "ultraloot.guide.restorer.3.title",
+          "items": [
+            "minecraft:hopper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "experience",
+      "icon": "ultraloot:experience_capsule",
+      "title": "ultraloot.guide.chapter.experience",
+      "pages": [
+        {
+          "text": "ultraloot.guide.experience.1",
+          "title": "ultraloot.guide.experience.1.title"
+        },
+        {
+          "text": "ultraloot.guide.experience.2",
+          "title": "ultraloot.guide.experience.2.title",
+          "items": [
+            "minecraft:experience_bottle",
+            "ultraloot:experience_capsule",
+            "ultraloot:range_card_1"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.experience.3",
+          "title": "ultraloot.guide.experience.3.title",
+          "recipe": "ultraloot:experience_capsule"
+        }
+      ]
+    },
+    {
+      "id": "upgrades",
+      "icon": "ultraloot:speed_card_1",
+      "title": "ultraloot.guide.chapter.upgrades",
+      "pages": [
+        {
+          "text": "ultraloot.guide.upgrades.1",
+          "title": "ultraloot.guide.upgrades.1.title",
+          "recipe": "ultraloot:blank_card",
+          "items": [
+            "ultraloot:speed_card_1",
+            "ultraloot:quantity_card_1",
+            "ultraloot:range_card_1",
+            "ultraloot:efficiency_card_1",
+            "ultraloot:loot_card_1"
+          ]
+        },
+        {
+          "text": "ultraloot.guide.upgrades.2",
+          "title": "ultraloot.guide.upgrades.2.title"
+        },
+        {
+          "text": "ultraloot.guide.upgrades.3",
+          "title": "ultraloot.guide.upgrades.3.title",
+          "recipe": "ultraloot:speed_card_1"
+        }
+      ]
+    },
+    {
+      "id": "sides",
+      "icon": "minecraft:hopper",
+      "title": "ultraloot.guide.chapter.sides",
+      "pages": [
+        {
+          "text": "ultraloot.guide.sides.1",
+          "title": "ultraloot.guide.sides.1.title"
+        },
+        {
+          "text": "ultraloot.guide.sides.2",
+          "title": "ultraloot.guide.sides.2.title"
+        },
+        {
+          "text": "ultraloot.guide.sides.3",
+          "title": "ultraloot.guide.sides.3.title"
+        }
+      ]
+    },
+    {
+      "id": "energy",
+      "icon": "minecraft:redstone",
+      "title": "ultraloot.guide.chapter.energy",
+      "pages": [
+        {
+          "text": "ultraloot.guide.energy.1",
+          "title": "ultraloot.guide.energy.1.title"
+        },
+        {
+          "text": "ultraloot.guide.energy.2",
+          "title": "ultraloot.guide.energy.2.title"
+        },
+        {
+          "text": "ultraloot.guide.energy.3",
+          "title": "ultraloot.guide.energy.3.title"
+        }
+      ]
+    },
+    {
+      "id": "automation",
+      "icon": "minecraft:comparator",
+      "title": "ultraloot.guide.chapter.automation",
+      "pages": [
+        {
+          "text": "ultraloot.guide.automation.1",
+          "title": "ultraloot.guide.automation.1.title"
+        },
+        {
+          "text": "ultraloot.guide.automation.2",
+          "title": "ultraloot.guide.automation.2.title"
+        },
+        {
+          "text": "ultraloot.guide.automation.3",
+          "title": "ultraloot.guide.automation.3.title"
+        }
+      ]
+    },
+    {
+      "id": "troubleshooting",
+      "icon": "minecraft:barrier",
+      "title": "ultraloot.guide.chapter.troubleshooting",
+      "pages": [
+        {
+          "text": "ultraloot.guide.troubleshooting.1",
+          "title": "ultraloot.guide.troubleshooting.1.title"
+        },
+        {
+          "text": "ultraloot.guide.troubleshooting.2",
+          "title": "ultraloot.guide.troubleshooting.2.title"
+        },
+        {
+          "text": "ultraloot.guide.troubleshooting.3",
+          "title": "ultraloot.guide.troubleshooting.3.title"
+        }
+      ]
+    }
+  ]
+}

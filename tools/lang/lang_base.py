@@ -82,6 +82,11 @@ status = {
     "invalid_mob": ("This mob cannot be simulated", "Este mob não pode ser simulado"),
     "no_xp": ("Not enough experience", "Experiência insuficiente"),
     "output_full": ("Output is full", "Saída cheia"),
+    "energy_buffer_too_small": ("Cost exceeds FE buffer: remove cards or upgrade tier",
+                                "Custo excede o buffer de FE: remova cartões ou suba o tier"),
+    "xp_tank_too_small": ("Cost exceeds XP tank: remove Quantity Card or upgrade tier",
+                          "Custo excede o tanque de XP: remova o Cartão de Quantidade ou suba o tier"),
+    "no_loot_source": ("No loot table for this mob (see log)", "Sem tabela de loot para este mob (veja o log)"),
 }
 for k, (en, pt) in status.items():
     put(f"ultraloot.status.{k}", en, pt)
@@ -103,7 +108,13 @@ for k, (en, pt) in scan.items():
 
 put("ultraloot.mob_card.empty", "No mob imprinted", "Nenhum mob gravado")
 put("ultraloot.mob_card.xp_cost", "XP per kill: %s", "XP por abate: %s")
-put("ultraloot.mob_card.energy", "Energy multiplier: %s", "Multiplicador de energia: %s")
+put("ultraloot.mob_card.energy", "FE cost: %s of base", "Custo de FE: %s do base")
+put("ultraloot.mob_card.tier", "Mob tier %s", "Tier do mob %s")
+put("ultraloot.mob_card.integrity", "Integrity: %s", "Integridade: %s")
+put("ultraloot.mob_card.decaying", "Decaying: %s of kills drop Rotten Flesh",
+    "Deteriorando: %s dos abates dão Carne Podre")
+put("ultraloot.mob_card.corrupted", "Corrupted: only Rotten Flesh, double FE", "Corrompido: só Carne Podre, FE em dobro")
+put("ultraloot.mob_card.repair_hint", "Repair it in a Card Restorer", "Conserte em um Restaurador de Cartões")
 put("ultraloot.mob_card.unsupported", "This mob is not supported", "Este mob não é suportado")
 put("ultraloot.mob_card.cannot_imprint", "This entity cannot be imprinted", "Esta entidade não pode ser gravada")
 put("ultraloot.blank_mob_card.hint", "Use on a living mob to imprint it", "Use em um mob vivo para gravá-lo")

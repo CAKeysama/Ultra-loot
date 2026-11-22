@@ -22,13 +22,20 @@ import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Finds item inventories around a Loot Generator. Runs on an interval (never every tick), only looks at block
  * entities of chunks that are already loaded (it never loads chunks) and caches each target with a
- * {@link BlockCapabilityCache}, which NeoForge invalidates automatically when the block changes.
+ * {@link BlockCapabilityCache}, which NeoForge invalidates automatically when the block changes. The caches are
+ * owned by the machine ({@link TargetCaches}) and reused from one scan to the next.
  * <p>
  * Range is a cube: a block is in range when {@code max(|dx|, |dy|, |dz|) <= range}.
  * Double chests are reported once. Other Ultra Loot machines are never targets. An inventory touching the machine
@@ -71,7 +78,75 @@ public final class InventoryScanner {
         public static final Result EMPTY = new Result(List.of(), List.of());
     }
 
+    /** Total {@link BlockCapabilityCache} instances created by every scanner since start-up (measurement for tests). */
+    private static final AtomicLong CACHE_CREATIONS = new AtomicLong();
+
+    public static long totalCacheCreations() {
+        return CACHE_CREATIONS.get();
+    }
+
+    /**
+     * Capability caches owned by one machine and reused across scans, keyed by target position + query side.
+     * <p>
+     * A {@link BlockCapabilityCache} already follows the block itself (NeoForge invalidates it when the block, its
+     * block entity or its chunk changes, and re-queries lazily), so an entry only has to be dropped when the machine
+     * stops using that position: after every scan, entries that were not targets of that scan (out of range, chunk
+     * not loaded, block gone, filtered by mode/face/blacklist) are removed. Everything is dropped when the level
+     * changes and when the owner calls {@link #clear()} (machine removed, range or face configuration changed).
+     * Not thread-safe; used from the server thread only.
+     */
+    public static final class TargetCaches {
+        private record Key(BlockPos pos, @Nullable Direction side) {}
+
+        private final Map<Key, BlockCapabilityCache<IItemHandler, @Nullable Direction>> caches = new HashMap<>();
+        @Nullable
+        private ServerLevel level;
+        private long creations;
+
+        BlockCapabilityCache<IItemHandler, @Nullable Direction> get(ServerLevel level, BlockPos pos, @Nullable Direction side) {
+            if (this.level != level) {
+                caches.clear();
+                this.level = level;
+            }
+            return caches.computeIfAbsent(new Key(pos.immutable(), side), key -> {
+                creations++;
+                CACHE_CREATIONS.incrementAndGet();
+                return BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, level, key.pos(), key.side());
+            });
+        }
+
+        /** Keeps only the caches of {@code used}; called at the end of every scan. */
+        void retain(Collection<Target> used) {
+            if (caches.isEmpty()) return;
+            Set<Key> keep = new HashSet<>();
+            for (Target target : used) keep.add(new Key(target.pos(), target.cache().context()));
+            caches.keySet().retainAll(keep);
+        }
+
+        public void clear() {
+            caches.clear();
+            level = null;
+        }
+
+        /** Number of caches currently held. */
+        public int size() {
+            return caches.size();
+        }
+
+        /** Number of {@link BlockCapabilityCache} instances this owner has created so far. */
+        public long creations() {
+            return creations;
+        }
+    }
+
+    /** One-off scan with caches that are not kept (every target gets a fresh cache). */
     public static Result scan(ServerLevel level, BlockPos origin, Direction facing, SideConfiguration sides, int range, TargetMode mode) {
+        return scan(level, origin, facing, sides, range, mode, new TargetCaches());
+    }
+
+    /** Scan reusing (and pruning) the machine's {@link TargetCaches}. */
+    public static Result scan(ServerLevel level, BlockPos origin, Direction facing, SideConfiguration sides, int range, TargetMode mode,
+                              TargetCaches caches) {
         List<Target> targets = new ArrayList<>();
         List<Entry> entries = new ArrayList<>();
         int minCx = SectionPos.blockToSectionCoord(origin.getX() - range);
@@ -108,8 +183,7 @@ public final class InventoryScanner {
 
                     entries.add(new Entry(pos.immutable(), BuiltInRegistries.BLOCK.getKey(state.getBlock()), distance, free, handler.getSlots(), entryState));
                     if (entryState == EntryState.TARGET || entryState == EntryState.FULL) {
-                        targets.add(new Target(pos.immutable(), distance,
-                                BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, level, pos.immutable(), null)));
+                        targets.add(new Target(pos.immutable(), distance, caches.get(level, pos, null)));
                     }
                 }
             }
@@ -117,6 +191,7 @@ public final class InventoryScanner {
         // Deterministic order: nearest first, then by position, so round robin is stable between scans.
         Comparator<BlockPos> posOrder = Comparator.naturalOrder();
         targets.sort(Comparator.comparingInt(Target::distance).thenComparing(Target::pos, posOrder));
+        caches.retain(targets);
         entries.sort(Comparator.comparingInt(Entry::distance).thenComparing(Entry::pos, posOrder));
         if (entries.size() > Balance.MAX_SCAN_ENTRIES) entries = new ArrayList<>(entries.subList(0, Balance.MAX_SCAN_ENTRIES));
         return new Result(List.copyOf(targets), List.copyOf(entries));

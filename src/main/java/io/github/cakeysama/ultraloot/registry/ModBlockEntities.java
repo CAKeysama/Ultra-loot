@@ -3,6 +3,7 @@ package io.github.cakeysama.ultraloot.registry;
 import io.github.cakeysama.ultraloot.UltraLoot;
 import io.github.cakeysama.ultraloot.experience.ExperienceCapability;
 import io.github.cakeysama.ultraloot.experience.ExperienceFluidAdapter;
+import io.github.cakeysama.ultraloot.machine.CardRestorerBlockEntity;
 import io.github.cakeysama.ultraloot.machine.LootGeneratorBlockEntity;
 import io.github.cakeysama.ultraloot.machine.MachineBlock;
 import io.github.cakeysama.ultraloot.machine.MachineFamily;
@@ -31,9 +32,19 @@ public final class ModBlockEntities {
             REGISTER.register("mob_loot_generator", () -> BlockEntityType.Builder.of(MobLootGeneratorBlockEntity::new,
                     ModBlocks.machines(MachineFamily.MOB_LOOT_GENERATOR).stream().map(DeferredBlock::get).toArray(MachineBlock[]::new)).build(null));
 
-    /** Every capability is resolved per face from the machine's side configuration. */
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CardRestorerBlockEntity>> CARD_RESTORER =
+            REGISTER.register("card_restorer", () -> BlockEntityType.Builder.of(CardRestorerBlockEntity::new,
+                    ModBlocks.CARD_RESTORER.get()).build(null));
+
+    /**
+     * Every generator capability is resolved per face from the machine's side configuration. The Card Restorer has no
+     * side configuration: every face accepts FE, inserts cards into its input and extracts from its output.
+     */
     @SubscribeEvent
     static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CARD_RESTORER.get(), (be, side) -> be.getEnergyCapability(side));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CARD_RESTORER.get(), (be, side) -> be.getItemCapability(side));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LOOT_GENERATOR.get(), (be, side) -> be.getEnergyCapability(side));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MOB_LOOT_GENERATOR.get(), (be, side) -> be.getEnergyCapability(side));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MOB_LOOT_GENERATOR.get(), (be, side) -> be.getItemCapability(side));

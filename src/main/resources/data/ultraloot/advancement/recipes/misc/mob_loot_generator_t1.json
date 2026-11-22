@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ultraloot:mob_loot_generator_t1"
+      }
+    },
+    "has_logic_circuit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:logic_circuit"
+          }
+        ]
+      }
+    },
+    "has_machine_frame": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:machine_frame"
+          }
+        ]
+      }
+    },
+    "has_soul_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ultraloot:soul_core"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_logic_circuit",
+      "has_machine_frame",
+      "has_soul_core"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ultraloot:mob_loot_generator_t1"
+    ]
+  }
+}

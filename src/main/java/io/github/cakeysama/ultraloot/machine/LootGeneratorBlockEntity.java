@@ -43,6 +43,8 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
     private ResourceLocation profileId;
     private InventoryScanner.TargetMode targetMode = InventoryScanner.TargetMode.STORAGE_ONLY;
     private InventoryScanner.Result scan = InventoryScanner.Result.EMPTY;
+    /** Capability caches of the targets, reused across scans (pruned by every scan, cleared on config change/removal). */
+    private final InventoryScanner.TargetCaches targetCaches = new InventoryScanner.TargetCaches();
     private int scanTimer;
     private int roundRobin;
     private long lastManualRescan = Long.MIN_VALUE / 2;
@@ -62,7 +64,18 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
 
     private void rescan(ServerLevel level) {
         scanTimer = Balance.scanIntervalTicks;
-        scan = InventoryScanner.scan(level, worldPosition, facing(), sides, modifiers().range(), targetMode);
+        scan = InventoryScanner.scan(level, worldPosition, facing(), sides, modifiers().range(), targetMode, targetCaches);
+    }
+
+    /** Drops every cached target capability and schedules a fresh scan (range, faces or target mode changed). */
+    private void resetTargets() {
+        targetCaches.clear();
+        requestRescan();
+    }
+
+    /** Capability caches currently owned by this machine (exposed for tests). */
+    public InventoryScanner.TargetCaches targetCaches() {
+        return targetCaches;
     }
 
     /** Schedules a scan on the next tick; manual requests are throttled so clicking can't force a scan every tick. */
@@ -152,13 +165,13 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
 
     @Override
     protected void onModifiersChanged() {
-        requestRescan();
+        resetTargets(); // the range may have changed
     }
 
     @Override
     protected void onSidesChanged() {
         super.onSidesChanged();
-        requestRescan();
+        resetTargets();
     }
 
     // ---- Configuration (validated server-side by the menu) ---------------------------------------------
@@ -181,7 +194,7 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
     public void setTargetMode(InventoryScanner.TargetMode mode) {
         if (targetMode == mode) return;
         targetMode = mode;
-        requestRescan();
+        resetTargets();
         setChanged();
     }
 
@@ -273,6 +286,18 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
     public void setRemoved() {
         super.setRemoved();
         contextEntities.clear();
+        // Also runs on chunk unload (LevelChunk#clearAllBlockEntities); drop the caches and the targets holding them.
+        targetCaches.clear();
+        scan = InventoryScanner.Result.EMPTY;
+    }
+
+    @Override
+    public void setLevel(Level level) {
+        if (this.level != level) {
+            targetCaches.clear();
+            scan = InventoryScanner.Result.EMPTY;
+        }
+        super.setLevel(level);
     }
 
     @Nullable

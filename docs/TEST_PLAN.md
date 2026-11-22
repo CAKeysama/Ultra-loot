@@ -14,7 +14,7 @@ transactional (*simulate, then commit*). The suite therefore has three layers:
 | Manual | In-game checklist below | before every release | GUI, rendering, UX, multiplayer sync, compatibility with other mods |
 
 ```bash
-export JAVA_HOME="C:/Users/conta/.jdks/jdk-21.0.13+9"
+# JDK 21 required (JAVA_HOME or Gradle toolchain detection)
 ./gradlew test                 # unit tests; report: build/reports/tests/test/index.html
 ./gradlew runGameTestServer    # GameTests; exits non-zero when a required test fails; run dir: run/
 ```
@@ -39,9 +39,9 @@ export JAVA_HOME="C:/Users/conta/.jdks/jdk-21.0.13+9"
 
 | Suite | Command | Result |
 |---|---|---|
-| Unit | `./gradlew test` | 124 test cases (116 methods, some parameterized): all pass |
-| GameTest | `./gradlew runGameTestServer` | 31 required tests: all pass (4 consecutive runs after the orb-motion fix) |
-| Manual | checklist below | not run yet |
+| Unit | `./gradlew test` | 173 test cases: all pass (0.2.0) |
+| GameTest | `./gradlew runGameTestServer` | 55 required tests: all pass (0.2.0) |
+| Manual | checklist below | 0.2.0: 2 pass, 5 partial, 6 blocked (mouse input), 6 not run; see TEST_REPORT.md |
 
 ## Automated coverage
 
@@ -58,6 +58,7 @@ export JAVA_HOME="C:/Users/conta/.jdks/jdk-21.0.13+9"
 | `machine/SideConfigurationTest` | family defaults, rejected modes, cycling wraps over allowed modes only, world-direction lookup, array round trip, invalid persisted values |
 | `machine/RelativeSideTest` | bijection + round trip for all 4 facings, left/right as seen by the viewer, rotation consistency |
 | `inventory/TransactionalInserterTest` | round-robin order and cursor, full targets skipped, spill-over, all-or-nothing, non-stackables, merging partial stacks, slot limits, max stack size, `isItemValid`, plan has no side effects, commit-time rejection returned (never voided) or rerouted, conservation of item count |
+| `menu/GuiSyncDeltaTest` | first snapshot sent whole; unchanged profile list left out and restored by the client; changed and emptied lists sent; non-sticky keys never carried over |
 | `loot/LootModelTest` | auto profile id format, profile JSON codec defaults and validation, FOOD/EQUIPMENT/ALL filters, ordinal fallbacks, statistics round trip, mob simulation data codec |
 
 ### GameTests (`gametest/UltraLootGameTests`)
@@ -73,7 +74,10 @@ Mob Loot Generator: zombie Mob Card + XP + FE produces drops, XP and FE match op
 is ever added to the world; `OUTPUT_FULL` with FE/XP kept; export through the Item Output face (bottom) into a chest
 below; no export through other faces; `NO_XP`; `NO_MOB_CARD` and card validation; XP bottle intake; Range Card orb
 collection (and none without the card); capabilities per face (FE, XP, fluid adapter, XP item slot, extract-only
-output); full NBT persistence round trip (XP, FE, card, cards, output, XP slot, sides, statistics).
+output); full NBT persistence round trip (XP, FE, card, cards, output, XP slot, sides, statistics);
+`ENERGY_BUFFER_TOO_SMALL` (Tier I, zombie, Speed/Quantity/Range/Loot III = 11,466 FE > 10,000: nothing consumed,
+then runs once the Range card is removed); `XP_TANK_TOO_SMALL` (xp cost raised above the tank: XP untouched). Both
+were confirmed to fail on the 0.1.0 code.
 
 The Range Card orb test spawns its orb with zero motion. Vanilla orbs spawn with random motion and could drift out
 of the 2-block radius before the 20-tick collection pass, which made the test flaky (1 failure in 5 runs).
@@ -123,6 +127,21 @@ with two clients.
     fluid from a mod that tags `c:experience` fills the XP tank; hoppers/pipes extract from Item Output faces only.
 13. **Performance**: 50 Loot Generators with Range III in one area. Check `/neoforge tps` and the profiler, and
     confirm there is no per-tick world scan.
+14. **Status colours (0.2.0)**: cyan square running, gray hollow square idle, amber "!" waiting, red "x" blocked;
+    XP_TANK_TOO_SMALL with a Tier I machine, an evoker card and a Quantity Card; NO_LOOT_SOURCE tooltip with a
+    datapack naming a missing table.
+15. **Card wear (0.2.0)**: new card (no bar), worn (green bar), decaying (amber, Rotten Flesh mixed in), corrupted
+    (red, only Rotten Flesh, FE x2); the Mob Configuration integrity row matches the tooltip.
+16. **Card Restorer (0.2.0)**: repairs a corrupted card to new, pays FE only for repaired points, card moves to the
+    output; hopper in / hopper out works; idle / no energy / output full statuses.
+17. **Recipe book (0.2.0)**: picking up a key ingredient unlocks the recipe in the vanilla recipe book.
+18. **Guide book (0.2.0)**: a new player receives one guide on first join (not again after relog or death); the
+    book opens, all 13 chapters are reachable from the list (scroll), arrows / keys / wheel turn pages, crafting
+    grids show the right items and the result, tag ingredients cycle, hover tooltips work, worn-card icons show
+    their bar, text never overflows the page in English and Portuguese, the book reopens on the last page.
+19. **Mekanism (0.2.0, `runClientMekanism`)**: Mekanism cables/energy cube power every machine and the Card
+    Restorer; a Logistical Transporter extracts from an Item Output face and inserts a Mob Card into an XP Input
+    face.
 
 ## Known bugs found by the suite
 
