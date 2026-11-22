@@ -37,6 +37,10 @@ Imagens em `screenshots/` (tiradas no jogo, 854×480). Sugestão de ordem: 01 m�
 03 gerador de loot, 04 restaurador, 05 status, 06/07 livro-guia.
 
 ## Arquivos
+- `DESCRIPTION.md` usa as imagens de `art/` pelo link raw do GitHub (`.../Ultra-loot/main/curseforge/art/...`),
+  então elas precisam estar no `main` do repositório antes de colar a descrição no CurseForge.
+- `art/*.png` (banner, títulos, painéis, tiers, cartas) é gerado por `python tools/generate_curseforge_art.py`
+  a partir das texturas do mod e de uma fonte pixel própria (`--check` confere se está em dia).
 - `logo.png` é gerado por `python tools/generate_logo.py` (também gera `src/main/resources/ultraloot_logo.png`,
   o ícone na lista de mods do jogo).
 - O nome, versão, autor, licença, links e logo do mod dentro do JAR vêm de `gradle.properties` e
