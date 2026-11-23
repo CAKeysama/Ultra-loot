@@ -31,6 +31,8 @@ public final class Balance {
     public static int scanIntervalTicks = 100;
     /** Maximum scan entries kept for the GUI list. */
     public static final int MAX_SCAN_ENTRIES = 64;
+    /** Maximum inventories a Loot Generator can remember as picked ("Picked only" mode). */
+    public static final int MAX_PICKED_TARGETS = 64;
     /** Minimum ticks between scans requested from the GUI. */
     public static final int MANUAL_RESCAN_COOLDOWN = 20;
 

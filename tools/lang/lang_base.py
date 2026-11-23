@@ -87,6 +87,8 @@ status = {
     "xp_tank_too_small": ("Cost exceeds XP tank: remove Quantity Card or upgrade tier",
                           "Custo excede o tanque de XP: remova o Cartão de Quantidade ou suba o tier"),
     "no_loot_source": ("No loot table for this mob (see log)", "Sem tabela de loot para este mob (veja o log)"),
+    "no_picked_targets": ("No inventory picked: tick one in the Inventory Scan tab",
+                          "Nenhum inventário escolhido: marque um na aba Varredura"),
 }
 for k, (en, pt) in status.items():
     put(f"ultraloot.status.{k}", en, pt)
@@ -102,6 +104,7 @@ scan = {
     "not_storage": ("Not a storage block (Storage only mode)", "Não é armazenamento (modo só armazenamento)"),
     "blacklisted": ("Never used by the generator", "Nunca usado pelo gerador"),
     "face_disabled": ("Touching face is not an Item Target", "Face em contato não é Alvo de Itens"),
+    "not_picked": ("Not picked (Picked only mode)", "Não escolhido (modo só os escolhidos)"),
 }
 for k, (en, pt) in scan.items():
     put(f"ultraloot.scan_state.{k}", en, pt)

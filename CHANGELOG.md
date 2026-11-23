@@ -3,6 +3,23 @@
 All notable changes to Ultra Loot. Format based on [Keep a Changelog](https://keepachangelog.com/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2026-11-23
+
+Save-compatible with 0.2.0: machines without picks keep filling every inventory in range.
+
+### Added
+- **Choose the chests** of a Loot Generator: the Inventory Scan tab has a new **All in range / Picked only** button.
+  In Picked only mode a click on a row ticks or unticks that inventory, and loot only goes to ticked ones; chests
+  placed later are ignored until picked. Picks are saved as offsets from the machine (`PickedOnly`, `Picked` NBT),
+  at most 64 (`Balance.MAX_PICKED_TARGETS`); a double chest counts as picked through either half. The server only
+  accepts picks of inventories its last scan listed.
+- Scan entry state **Not picked** and machine status **No inventory picked** (`NO_PICKED_TARGETS`, red). New
+  statuses, entry states and menu actions are appended, so synced ordinals keep their meaning.
+- Guide: new page "Choosing the chests" in the Loot Generator chapter; the red status list mentions the new status.
+
+### Changed
+- Inventory Scan tab: the Targets and Range rows moved into the tooltip of the new mode button.
+
 ## [0.2.0] — 2026-11-22
 
 Engineering remediation and owner balance decisions. Registry ids, NBT keys and existing data components are

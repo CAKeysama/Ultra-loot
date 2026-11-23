@@ -92,7 +92,11 @@
         },
         {
           "text": "ultraloot.guide.loot_generator.5",
-          "title": "ultraloot.guide.loot_generator.5.title",
+          "title": "ultraloot.guide.loot_generator.5.title"
+        },
+        {
+          "text": "ultraloot.guide.loot_generator.6",
+          "title": "ultraloot.guide.loot_generator.6.title",
           "recipe": "ultraloot:loot_generator_t2"
         }
       ]

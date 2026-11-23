@@ -41,6 +41,9 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
     private static final int TOGGLE_WIDTH = 86;
     private static final int RESCAN_X = 107;
     private static final int RESCAN_WIDTH = 60;
+    private static final int PICK_MODE_X = 7;
+    private static final int PICK_MODE_WIDTH = 96;
+    private static final int CHECKBOX = 9;
 
     private final ScrollableList profileList = new ScrollableList(7, 19, 148, 4);
     private final ScrollableList scanList = new ScrollableList(7, 19, 148, 4);
@@ -148,7 +151,25 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
             case NOT_STORAGE -> 0xFF8A909A;
             case BLACKLISTED -> GuiDraw.BAD;
             case FACE_DISABLED -> 0xFF6A8CC8;
+            case NOT_PICKED -> GuiDraw.DIM;
         };
+    }
+
+    private static Component pickModeName(boolean pickedOnly) {
+        return Component.translatable(pickedOnly ? "ultraloot.gui.scan.picked_only" : "ultraloot.gui.scan.all_in_range");
+    }
+
+    /** Small checkbox: dark frame, accent fill and a pixel check mark when ticked. */
+    private void renderCheckbox(GuiGraphics graphics, int x, int y, boolean ticked, boolean hovered) {
+        graphics.fill(x, y, x + CHECKBOX, y + CHECKBOX, hovered ? GuiDraw.TEXT : GuiDraw.DIM);
+        graphics.fill(x + 1, y + 1, x + CHECKBOX - 1, y + CHECKBOX - 1, ticked ? accent() : 0xFF16191E);
+        if (!ticked) return;
+        int c = 0xFF101216;
+        graphics.fill(x + 2, y + 4, x + 3, y + 6, c);
+        graphics.fill(x + 3, y + 5, x + 4, y + 7, c);
+        graphics.fill(x + 4, y + 4, x + 5, y + 6, c);
+        graphics.fill(x + 5, y + 3, x + 6, y + 5, c);
+        graphics.fill(x + 6, y + 2, x + 7, y + 4, c);
     }
 
     // ---- Rendering --------------------------------------------------------------------------------------
@@ -244,6 +265,7 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
 
     private void renderScan(GuiGraphics graphics, int mx, int my) {
         int hovered = scanList.rowAt(mx, my);
+        boolean picking = menu.pickedOnly();
         int x = scanList.x() + 1;
         int width = scanList.width() - 2;
         if (scan.isEmpty()) {
@@ -254,22 +276,29 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
             if (index >= scan.size()) break;
             ScanInfo entry = scan.get(index);
             int y = scanList.rowY(i);
-            if (index == hovered) {
+            boolean ticked = picking && entry.picked();
+            if (ticked) {
+                graphics.fill(x, y, x + width, y + ScrollableList.ROW_HEIGHT, (accent() & 0x00FFFFFF) | 0x30000000);
+                graphics.fill(x, y, x + 2, y + ScrollableList.ROW_HEIGHT, accent());
+            } else if (index == hovered) {
                 graphics.fill(x, y, x + width, y + ScrollableList.ROW_HEIGHT, GuiDraw.ROW_HOVER);
             } else if (index % 2 == 1) {
                 graphics.fill(x, y, x + width, y + ScrollableList.ROW_HEIGHT, GuiDraw.ROW_ALT);
             }
             graphics.renderItem(blockIcon(entry.block()), x + 3, y + 1);
-            int textWidth = width - 22 - 7;
-            GuiDraw.trimmed(graphics, font, blockName(entry.block()), x + 22, y + 1, textWidth, GuiDraw.TEXT);
+            int textWidth = width - 22 - 7 - (picking ? CHECKBOX + 3 : 0);
+            int nameColor = picking && !entry.picked() ? GuiDraw.DIM : GuiDraw.TEXT;
+            GuiDraw.trimmed(graphics, font, blockName(entry.block()), x + 22, y + 1, textWidth, nameColor);
             Component detail = Component.translatable("ultraloot.gui.scan.entry", entry.distance(), entry.freeSlots(), entry.totalSlots());
             GuiDraw.trimmed(graphics, font, detail, x + 22, y + 10, textWidth, GuiDraw.DIM);
+            if (picking) {
+                renderCheckbox(graphics, x + width - 8 - CHECKBOX, y + (ScrollableList.ROW_HEIGHT - CHECKBOX) / 2, entry.picked(),
+                        index == hovered);
+            }
             graphics.fill(x + width - 5, y + 2, x + width - 2, y + ScrollableList.ROW_HEIGHT - 2, stateColor(entry.state()));
         }
 
-        row(graphics, "ultraloot.gui.targets", Component.literal(GuiFormat.number(menu.targetCount())), 8, BOTTOM_Y + 1, 94,
-                menu.targetCount() == 0 ? GuiDraw.WARN : GuiDraw.TEXT);
-        row(graphics, "ultraloot.gui.stat.range", GuiFormat.number(menu.range()), 8, BOTTOM_Y + 10, 94);
+        renderButton(graphics, pickModeName(picking), PICK_MODE_X, BOTTOM_Y, PICK_MODE_WIDTH, mx, my, true);
         renderButton(graphics, Component.translatable("ultraloot.gui.scan.rescan"), RESCAN_X, BOTTOM_Y, RESCAN_WIDTH, mx, my, true);
     }
 
@@ -343,13 +372,29 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
         int index = scanList.rowAt(mx, my);
         if (index >= 0) {
             ScanInfo entry = scan.get(index);
-            return List.of(blockName(entry.block()),
+            List<Component> lines = new ArrayList<>(List.of(blockName(entry.block()),
                     Component.translatable(entry.state().translationKey())
                             .withStyle(s -> s.withColor(TextColor.fromRgb(stateColor(entry.state()) & 0xFFFFFF))),
                     Component.translatable("ultraloot.gui.scan.position", entry.pos().getX(), entry.pos().getY(), entry.pos().getZ())
                             .withStyle(ChatFormatting.GRAY),
                     Component.translatable("ultraloot.gui.scan.distance", entry.distance()).withStyle(ChatFormatting.GRAY),
-                    Component.translatable("ultraloot.gui.scan.slots", entry.freeSlots(), entry.totalSlots()).withStyle(ChatFormatting.GRAY));
+                    Component.translatable("ultraloot.gui.scan.slots", entry.freeSlots(), entry.totalSlots()).withStyle(ChatFormatting.GRAY)));
+            if (menu.pickedOnly()) {
+                lines.add(Component.translatable(entry.picked() ? "ultraloot.gui.scan.click_unpick" : "ultraloot.gui.scan.click_pick")
+                        .withStyle(ChatFormatting.DARK_GRAY));
+            } else {
+                lines.add(Component.translatable("ultraloot.gui.scan.pick_hint").withStyle(ChatFormatting.DARK_GRAY));
+            }
+            return lines;
+        }
+        if (isOver(mx, my, PICK_MODE_X, BOTTOM_Y, PICK_MODE_WIDTH, GuiSprites.BUTTON_HEIGHT)) {
+            boolean picking = menu.pickedOnly();
+            return List.of(pickModeName(picking),
+                    Component.translatable(picking ? "ultraloot.gui.scan.picked_only.desc" : "ultraloot.gui.scan.all_in_range.desc")
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("ultraloot.gui.scan.summary", menu.targetCount(), menu.range(), menu.pickedCount())
+                            .withStyle(ChatFormatting.GRAY),
+                    Component.translatable("ultraloot.gui.click_to_switch").withStyle(ChatFormatting.DARK_GRAY));
         }
         if (isOver(mx, my, RESCAN_X, BOTTOM_Y, RESCAN_WIDTH, GuiSprites.BUTTON_HEIGHT)) {
             return List.of(Component.translatable("ultraloot.gui.scan.rescan.desc"));
@@ -364,8 +409,7 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
         refresh();
         return switch (tab) {
             case LootGeneratorMenu.TAB_LOOT -> lootClicked(mx, my, button);
-            case LootGeneratorMenu.TAB_SCAN -> button == 0 && isOver(mx, my, RESCAN_X, BOTTOM_Y, RESCAN_WIDTH, GuiSprites.BUTTON_HEIGHT)
-                    && send(MachineAction.RESCAN, 0, "");
+            case LootGeneratorMenu.TAB_SCAN -> scanClicked(mx, my, button);
             case LootGeneratorMenu.TAB_SIDES -> sides.mouseClicked(mx, my, button);
             default -> false;
         };
@@ -388,6 +432,21 @@ public class LootGeneratorScreen extends MachineScreen<LootGeneratorMenu> {
             return send(MachineAction.SET_TARGET_MODE, next.ordinal(), "");
         }
         return false;
+    }
+
+    private boolean scanClicked(double mx, double my, int button) {
+        if (button != 0) return false;
+        int index = scanList.rowAt(mx, my);
+        if (index >= 0) {
+            if (!menu.pickedOnly()) return false;
+            int[] pos = MachineAction.packPos(scan.get(index).pos().asLong());
+            MachineActionPayload.send(menu, MachineAction.TOGGLE_PICKED, pos[0], pos[1]);
+            return true;
+        }
+        if (isOver(mx, my, PICK_MODE_X, BOTTOM_Y, PICK_MODE_WIDTH, GuiSprites.BUTTON_HEIGHT)) {
+            return send(MachineAction.SET_PICKED_ONLY, menu.pickedOnly() ? 0 : 1, "");
+        }
+        return isOver(mx, my, RESCAN_X, BOTTOM_Y, RESCAN_WIDTH, GuiSprites.BUTTON_HEIGHT) && send(MachineAction.RESCAN, 0, "");
     }
 
     private boolean send(MachineAction action, int a, String text) {

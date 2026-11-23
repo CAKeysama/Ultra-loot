@@ -32,7 +32,7 @@ public class LootGeneratorMenu extends MachineMenu {
 
     /** One inventory found by the scanner. */
     public record ScanInfo(BlockPos pos, ResourceLocation block, int distance, int freeSlots, int totalSlots,
-                           InventoryScanner.EntryState state) {}
+                           InventoryScanner.EntryState state, boolean picked) {}
 
     @Nullable
     private final LootGeneratorBlockEntity generator;
@@ -60,6 +60,8 @@ public class LootGeneratorMenu extends MachineMenu {
             case SET_PROFILE -> generator.selectProfile(text.isEmpty() ? null : ResourceLocation.tryParse(text));
             case SET_TARGET_MODE -> generator.setTargetMode(InventoryScanner.TargetMode.byOrdinal(a));
             case RESCAN -> generator.requestManualRescan();
+            case SET_PICKED_ONLY -> generator.setPickedOnly(a == 1);
+            case TOGGLE_PICKED -> generator.togglePicked(BlockPos.of(MachineAction.unpackPos(a, b)));
             default -> {}
         }
     }
@@ -73,6 +75,14 @@ public class LootGeneratorMenu extends MachineMenu {
 
     public InventoryScanner.TargetMode targetMode() {
         return InventoryScanner.TargetMode.byOrdinal(data().getInt("targetMode"));
+    }
+
+    public boolean pickedOnly() {
+        return data().getBoolean("pickedOnly");
+    }
+
+    public int pickedCount() {
+        return data().getInt("pickedCount");
     }
 
     public int targetCount() {
@@ -108,7 +118,7 @@ public class LootGeneratorMenu extends MachineMenu {
             int state = e.getInt("state");
             if (block == null || state < 0 || state >= states.length) continue;
             result.add(new ScanInfo(BlockPos.of(e.getLong("pos")), block, e.getInt("dist"), e.getInt("free"),
-                    e.getInt("total"), states[state]));
+                    e.getInt("total"), states[state], e.getBoolean("picked")));
         }
         return result;
     }

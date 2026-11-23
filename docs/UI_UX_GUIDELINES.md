@@ -41,7 +41,7 @@ Card integrity follows the same scale: green while intact, amber while decaying,
 | Loot Generator | Overview | FE bar, status, progress, selected profile, FE per operation, targets summary |
 | | Upgrades | 4 upgrade slots + per-card effect rows |
 | | Loot config | scrollable profile list (icon, name, min tier, FE multiplier), filter buttons (need a Loot Card) |
-| | Inventory scan | scrollable list of nearby inventories with their state (target / full / not storage / blacklisted / face disabled) |
+| | Inventory scan | scrollable list of nearby inventories with their state (target / full / not storage / blacklisted / face disabled / not picked); **All in range / Picked only** button (tooltip: targets, range, picked count); in Picked only mode each row has a checkbox and a click ticks / unticks it; Rescan button |
 | | Side config | 6-face widget, click cycles the mode (None, Energy Input, Item Target) |
 | | Statistics | operations, FE spent, items generated / filtered |
 | Mob Loot Generator | Overview | FE bar, XP bar, status (+ loot-source reason), progress, mob, XP/op, FE/op, output free slots, XP item slot |

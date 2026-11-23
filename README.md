@@ -62,7 +62,8 @@ explains every machine in 13 illustrated chapters, with real crafting grids, in 
 1. Craft a **Machine Frame**, a **Logic Circuit** and a **Loot Core**, then a **Loot Generator (Tier I)**.
 2. Place chests or barrels within 5 blocks, power the machine with FE through an Energy face (back and bottom by default).
 3. Open the machine, go to **Loot Configuration** and choose a profile, e.g. *Dungeon*.
-4. Add upgrade cards in the **Upgrades** tab. Check reach and free space in **Inventory Scan**.
+4. Add upgrade cards in the **Upgrades** tab. Check reach and free space in **Inventory Scan**; to fill only some
+   chests, switch its button to **Picked only** and tick the chests you want.
 
 For the Mob Loot Generator, craft a **Soul Core** instead of the Loot Core, imprint a **Blank Mob Card** on a mob,
 insert it in the **Mob Configuration** tab and feed experience through the XP slot or an XP face.

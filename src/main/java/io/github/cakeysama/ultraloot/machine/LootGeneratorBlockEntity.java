@@ -30,8 +30,11 @@ import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Loot Generator: rolls the selected loot profile and inserts the results directly into nearby inventories.
@@ -42,6 +45,10 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
     @Nullable
     private ResourceLocation profileId;
     private InventoryScanner.TargetMode targetMode = InventoryScanner.TargetMode.STORAGE_ONLY;
+    /** "Picked only": deliver only to the inventories the player picked in the Inventory Scan tab. */
+    private boolean pickedOnly;
+    /** Picked inventories as offsets from this machine, so the choice follows the machine if it is moved. */
+    private final Set<BlockPos> pickedOffsets = new LinkedHashSet<>();
     private InventoryScanner.Result scan = InventoryScanner.Result.EMPTY;
     /** Capability caches of the targets, reused across scans (pruned by every scan, cleared on config change/removal). */
     private final InventoryScanner.TargetCaches targetCaches = new InventoryScanner.TargetCaches();
@@ -64,7 +71,16 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
 
     private void rescan(ServerLevel level) {
         scanTimer = Balance.scanIntervalTicks;
-        scan = InventoryScanner.scan(level, worldPosition, facing(), sides, modifiers().range(), targetMode, targetCaches);
+        Set<BlockPos> picked = pickedPositions();
+        scan = InventoryScanner.scan(level, worldPosition, facing(), sides, modifiers().range(), targetMode, targetCaches,
+                pickedOnly ? picked : null, picked);
+    }
+
+    /** Absolute positions of the picked inventories. */
+    public Set<BlockPos> pickedPositions() {
+        Set<BlockPos> result = new HashSet<>(pickedOffsets.size() * 2);
+        for (BlockPos offset : pickedOffsets) result.add(worldPosition.offset(offset));
+        return result;
     }
 
     /** Drops every cached target capability and schedules a fresh scan (range, faces or target mode changed). */
@@ -104,9 +120,17 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         if (profile == null) return MachineStatus.INVALID_PROFILE;
         if (profile.minTier() > tier.number()) return MachineStatus.PROFILE_LOCKED;
         List<IItemHandler> handlers = handlers();
-        if (handlers.isEmpty()) return MachineStatus.NO_TARGETS;
+        if (handlers.isEmpty()) return noTargetsStatus();
         if (!overflow.isEmpty() && !flushOverflow(handlers)) return MachineStatus.TARGETS_FULL;
         return null;
+    }
+
+    /** No usable target: in "Picked only" mode with inventories in range but none picked, say so. */
+    private MachineStatus noTargetsStatus() {
+        if (pickedOnly && scan.entries().stream().anyMatch(e -> e.state() == InventoryScanner.EntryState.NOT_PICKED)) {
+            return MachineStatus.NO_PICKED_TARGETS;
+        }
+        return MachineStatus.NO_TARGETS;
     }
 
     @Override
@@ -120,7 +144,7 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         if (params == null) return MachineStatus.INVALID_PROFILE;
 
         List<IItemHandler> handlers = handlers();
-        if (handlers.isEmpty()) return MachineStatus.NO_TARGETS;
+        if (handlers.isEmpty()) return noTargetsStatus();
 
         LootEngine.Result result;
         try {
@@ -202,6 +226,55 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         return targetMode;
     }
 
+    public void setPickedOnly(boolean value) {
+        if (pickedOnly == value) return;
+        pickedOnly = value;
+        requestRescan();
+        setChanged();
+    }
+
+    public boolean pickedOnly() {
+        return pickedOnly;
+    }
+
+    /**
+     * Picks or unpicks the inventory at {@code pos}. Unpicking always works; picking only accepts an inventory the
+     * last scan listed (so a client can't store arbitrary positions) and at most {@link Balance#MAX_PICKED_TARGETS}.
+     *
+     * @return true when the picked set changed
+     */
+    public boolean togglePicked(BlockPos pos) {
+        BlockPos offset = pos.subtract(worldPosition);
+        boolean changed;
+        if (pickedOffsets.remove(offset)) {
+            changed = true;
+        } else {
+            InventoryScanner.Entry entry = scan.entries().stream().filter(e -> e.pos().equals(pos)).findFirst().orElse(null);
+            if (entry == null) return false;
+            if (entry.picked()) {
+                // The other half of this double chest is the stored one: unpick that one instead.
+                changed = pickedOffsets.removeIf(o -> isOtherHalf(pos, worldPosition.offset(o)));
+            } else {
+                if (pickedOffsets.size() >= Balance.MAX_PICKED_TARGETS) return false;
+                changed = pickedOffsets.add(offset.immutable());
+            }
+        }
+        if (changed) {
+            requestRescan();
+            setChanged();
+        }
+        return changed;
+    }
+
+    private boolean isOtherHalf(BlockPos pos, BlockPos candidate) {
+        if (level == null) return false;
+        return InventoryScanner.isPicked(Set.of(candidate), pos, level.getBlockState(pos));
+    }
+
+    public int pickedCount() {
+        return pickedOffsets.size();
+    }
+
     public InventoryScanner.Result scanResult() {
         return scan;
     }
@@ -213,6 +286,8 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         super.writeGuiData(tag);
         if (profileId != null) tag.putString("profile", profileId.toString());
         tag.putInt("targetMode", targetMode.ordinal());
+        tag.putBoolean("pickedOnly", pickedOnly);
+        tag.putInt("pickedCount", pickedOffsets.size());
         tag.putInt("overflow", overflow.stream().mapToInt(ItemStack::getCount).sum());
 
         ListTag entries = new ListTag();
@@ -223,6 +298,7 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
             e.putInt("free", entry.freeSlots());
             e.putInt("total", entry.totalSlots());
             e.putInt("state", entry.state().ordinal());
+            e.putBoolean("picked", entry.picked());
             e.putString("block", entry.block().toString());
             entries.add(e);
         }
@@ -253,6 +329,8 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         super.saveAdditional(tag, registries);
         if (profileId != null) tag.putString("Profile", profileId.toString());
         tag.putInt("TargetMode", targetMode.ordinal());
+        tag.putBoolean("PickedOnly", pickedOnly);
+        tag.putLongArray("Picked", pickedOffsets.stream().mapToLong(BlockPos::asLong).toArray());
         tag.putInt("RoundRobin", roundRobin);
         ListTag list = new ListTag();
         for (ItemStack stack : overflow) {
@@ -266,6 +344,12 @@ public class LootGeneratorBlockEntity extends AbstractMachineBlockEntity {
         super.loadAdditional(tag, registries);
         profileId = tag.contains("Profile") ? ResourceLocation.tryParse(tag.getString("Profile")) : null;
         targetMode = InventoryScanner.TargetMode.byOrdinal(tag.getInt("TargetMode"));
+        pickedOnly = tag.getBoolean("PickedOnly");
+        pickedOffsets.clear();
+        for (long packed : tag.getLongArray("Picked")) {
+            if (pickedOffsets.size() >= Balance.MAX_PICKED_TARGETS) break;
+            pickedOffsets.add(BlockPos.of(packed));
+        }
         roundRobin = Math.max(0, tag.getInt("RoundRobin"));
         overflow.clear();
         ListTag list = tag.getList("Overflow", Tag.TAG_COMPOUND);

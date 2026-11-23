@@ -56,15 +56,18 @@ public final class InventoryScanner {
     }
 
     public enum EntryState {
-        TARGET, FULL, NOT_STORAGE, BLACKLISTED, FACE_DISABLED;
+        TARGET, FULL, NOT_STORAGE, BLACKLISTED, FACE_DISABLED,
+        /** "Picked only" is on and the player did not pick this inventory. */
+        NOT_PICKED;
 
         public String translationKey() {
             return "ultraloot.scan_state." + name().toLowerCase(java.util.Locale.ROOT);
         }
     }
 
-    /** An inventory found in range, for the GUI. */
-    public record Entry(BlockPos pos, ResourceLocation block, int distance, int freeSlots, int totalSlots, EntryState state) {}
+    /** An inventory found in range, for the GUI. {@code picked}: in the machine's picked set (either chest half). */
+    public record Entry(BlockPos pos, ResourceLocation block, int distance, int freeSlots, int totalSlots, EntryState state,
+                        boolean picked) {}
 
     /** A usable target (state TARGET or FULL at scan time; fullness is re-evaluated on every operation). */
     public record Target(BlockPos pos, int distance, BlockCapabilityCache<IItemHandler, @Nullable Direction> cache) {
@@ -144,9 +147,22 @@ public final class InventoryScanner {
         return scan(level, origin, facing, sides, range, mode, new TargetCaches());
     }
 
-    /** Scan reusing (and pruning) the machine's {@link TargetCaches}. */
+    /** Scan reusing (and pruning) the machine's {@link TargetCaches}, using every eligible inventory. */
     public static Result scan(ServerLevel level, BlockPos origin, Direction facing, SideConfiguration sides, int range, TargetMode mode,
                               TargetCaches caches) {
+        return scan(level, origin, facing, sides, range, mode, caches, null, Set.of());
+    }
+
+    /**
+     * Full scan.
+     *
+     * @param pickedOnly when non-null ("Picked only" mode) only inventories in this set of absolute positions are
+     *                   targets; the others are reported as {@link EntryState#NOT_PICKED}. A double chest counts as
+     *                   picked when either half is in the set.
+     * @param picked     the machine's picked positions, used to flag {@link Entry#picked()} for the GUI in both modes
+     */
+    public static Result scan(ServerLevel level, BlockPos origin, Direction facing, SideConfiguration sides, int range, TargetMode mode,
+                              TargetCaches caches, @Nullable Set<BlockPos> pickedOnly, Set<BlockPos> picked) {
         List<Target> targets = new ArrayList<>();
         List<Entry> entries = new ArrayList<>();
         int minCx = SectionPos.blockToSectionCoord(origin.getX() - range);
@@ -170,6 +186,7 @@ public final class InventoryScanner {
                     if (handler == null || handler.getSlots() == 0) continue;
 
                     int free = TransactionalInserter.freeSlots(handler);
+                    boolean isPicked = isPicked(picked, pos, state);
                     EntryState entryState;
                     if (state.is(ModTags.Blocks.SCAN_BLACKLIST)) {
                         entryState = EntryState.BLACKLISTED;
@@ -177,11 +194,14 @@ public final class InventoryScanner {
                         entryState = EntryState.NOT_STORAGE;
                     } else if (touchesDisabledFace(origin, facing, sides, pos, state)) {
                         entryState = EntryState.FACE_DISABLED;
+                    } else if (pickedOnly != null && !isPicked(pickedOnly, pos, state)) {
+                        entryState = EntryState.NOT_PICKED;
                     } else {
                         entryState = free == 0 && isCompletelyFull(handler) ? EntryState.FULL : EntryState.TARGET;
                     }
 
-                    entries.add(new Entry(pos.immutable(), BuiltInRegistries.BLOCK.getKey(state.getBlock()), distance, free, handler.getSlots(), entryState));
+                    entries.add(new Entry(pos.immutable(), BuiltInRegistries.BLOCK.getKey(state.getBlock()), distance, free,
+                            handler.getSlots(), entryState, isPicked));
                     if (entryState == EntryState.TARGET || entryState == EntryState.FULL) {
                         targets.add(new Target(pos.immutable(), distance, caches.get(level, pos, null)));
                     }
@@ -210,6 +230,15 @@ public final class InventoryScanner {
         BlockPos other = pos.relative(ChestBlock.getConnectedDirection(state));
         if (distance(origin, other) > range || distance(origin, other) == 0) return true;
         return pos.compareTo(other) < 0;
+    }
+
+    /** True when {@code pos}, or the other half of the double chest at {@code pos}, is in {@code set}. */
+    public static boolean isPicked(Set<BlockPos> set, BlockPos pos, BlockState state) {
+        if (set.isEmpty()) return false;
+        if (set.contains(pos)) return true;
+        return state.getBlock() instanceof ChestBlock && state.hasProperty(ChestBlock.TYPE)
+                && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE
+                && set.contains(pos.relative(ChestBlock.getConnectedDirection(state)));
     }
 
     private static boolean touchesDisabledFace(BlockPos origin, Direction facing, SideConfiguration sides, BlockPos pos, BlockState state) {

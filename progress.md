@@ -40,6 +40,8 @@ Last update: 2026-11-22 (session 3: remediation, 0.2.0)
 | GitHub release v0.2.0 (pre-release, JAR attached) | COMPLETED (owner request) |
 | CurseForge page: logo, pixel-art description (`tools/generate_curseforge_art.py`, `curseforge/art/`) | COMPLETED |
 | CurseForge project 1824987 created; file "Ultra Loot 0.2.0" (Release, NeoForge, 1.21.1, Java 21) uploaded | DONE, waiting for moderator approval |
+| Chest picking for the Loot Generator (Inventory Scan: All in range / Picked only, checkboxes, NO_PICKED_TARGETS, guide page) | COMPLETED: 175 unit, 58 GameTests green; GUI clicks not checked in the game client |
+| Release 0.3.0 (GitHub pre-release v0.3.0, JAR attached) | COMPLETED (owner request); CurseForge file still to upload |
 
 ## Environment
 - JDK 21 found through JAVA_HOME (`C:\Program Files\Java\jdk-21`, 21.0.9). `~/.jdks` no longer exists; the

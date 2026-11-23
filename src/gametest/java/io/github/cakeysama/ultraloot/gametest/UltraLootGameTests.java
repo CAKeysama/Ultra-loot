@@ -325,6 +325,67 @@ public final class UltraLootGameTests {
         });
     }
 
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 240)
+    public static void lootGeneratorPickedOnlyUsesPickedChest(GameTestHelper helper) {
+        LootGeneratorBlockEntity be = lootGenerator(helper, true);
+        ChestBlockEntity picked = chest(helper, MACHINE.offset(-3, 0, 0));
+        ChestBlockEntity other = chest(helper, MACHINE.offset(3, 0, 0));
+        be.setPickedOnly(true);
+        helper.failIfEver(() -> helper.assertTrue(itemCount(other) == 0, "an unpicked chest received items"));
+        helper.runAfterDelay(5, () -> helper.assertTrue(be.togglePicked(abs(helper, MACHINE.offset(-3, 0, 0))),
+                "picking a scanned chest was refused"));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(be.statistics().operations() >= 3, "waiting for three operations");
+            helper.assertValueEqual((long) itemCount(picked), be.statistics().itemsGenerated(), "items in the picked chest");
+            helper.assertTrue(be.scanResult().entries().stream().anyMatch(e -> e.state() == InventoryScanner.EntryState.NOT_PICKED
+                    && e.pos().equals(abs(helper, MACHINE.offset(3, 0, 0)))), "unpicked chest is not reported as NOT_PICKED");
+        });
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
+    public static void lootGeneratorPickedOnlyWithNothingPicked(GameTestHelper helper) {
+        LootGeneratorBlockEntity be = lootGenerator(helper, true);
+        int initial = be.energy().getEnergyStored();
+        ChestBlockEntity chest = chest(helper, MACHINE.offset(0, 0, -3));
+        be.setPickedOnly(true);
+        helper.runAfterDelay(60, () -> {
+            helper.assertValueEqual(be.status(), MachineStatus.NO_PICKED_TARGETS, "status");
+            helper.assertValueEqual(be.energy().getEnergyStored(), initial, "stored FE");
+            helper.assertValueEqual(itemCount(chest), 0, "items in the unpicked chest");
+            // Back to every inventory in range: the same chest is used again.
+            be.setPickedOnly(false);
+            helper.succeedWhen(() -> helper.assertTrue(itemCount(chest) > 0, "chest unused after switching back to all"));
+        });
+    }
+
+    @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
+    public static void lootGeneratorPickedSelectionRules(GameTestHelper helper) {
+        LootGeneratorBlockEntity be = lootGenerator(helper, true);
+        BlockPos left = MACHINE.offset(0, 0, -3);
+        helper.setBlock(left, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.TYPE, ChestType.LEFT));
+        helper.setBlock(left.east(), Blocks.CHEST.defaultBlockState().setValue(ChestBlock.TYPE, ChestType.RIGHT));
+        be.setPickedOnly(true);
+        helper.runAfterDelay(5, () -> {
+            // A position the scan did not list can't be picked (a client can't store arbitrary positions).
+            helper.assertFalse(be.togglePicked(abs(helper, MACHINE.offset(1, 0, 1))), "picked a position that is not an inventory");
+            helper.assertValueEqual(be.scanResult().entries().size(), 1, "double chest listed once");
+            BlockPos listed = be.scanResult().entries().get(0).pos();
+            helper.assertTrue(be.togglePicked(listed), "picking the double chest was refused");
+            helper.assertValueEqual(be.pickedCount(), 1, "picked count");
+
+            // The choice is saved and loaded with the machine.
+            var registries = helper.getLevel().registryAccess();
+            var saved = be.saveWithoutMetadata(registries);
+            helper.assertTrue(be.togglePicked(listed), "unpicking was refused");
+            helper.assertValueEqual(be.pickedCount(), 0, "picked count after unpicking");
+            be.loadWithComponents(saved, registries);
+            helper.assertValueEqual(be.pickedCount(), 1, "picked count after loading");
+            helper.assertTrue(be.pickedOnly(), "Picked only mode lost on load");
+            helper.assertTrue(be.pickedPositions().contains(listed), "picked position lost on load");
+            helper.succeedWhen(() -> helper.assertTrue(be.statistics().operations() >= 1, "picked double chest not used"));
+        });
+    }
+
     /** Default target mode: only {@code #ultraloot:storage_targets} blocks (requires the shipped block tag). */
     @GameTest(template = TEMPLATE, batch = BATCH, timeoutTicks = 200)
     public static void lootGeneratorStorageOnlyModeUsesChests(GameTestHelper helper) {

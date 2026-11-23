@@ -5,12 +5,12 @@
   },
   "summary": {
     "unit": {
-      "pass": 173,
+      "pass": 175,
       "fail": 0,
       "not_run": 0
     },
     "gametest": {
-      "pass": 55,
+      "pass": 58,
       "fail": 0,
       "not_run": 0
     },
@@ -1771,6 +1771,41 @@
       "type": "manual",
       "status": "pass",
       "notes": "Creative energy cube -> universal cable powered Mob Loot Generator, Loot Generator and Card Restorer. Hopper -> Logistical Transporter inserted a Mob Card into the top (XP Input) face; a transporter under the machine moved 19 Rotten Flesh to a chest. Note: a /setblock creative cube starts empty and needed energy_containers + output side NBT."
+    },
+    {
+      "id": "unit.MachineActionTest.blockPositionsSurviveTheTwoIntPacking",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "unit.MachineActionTest.newActionsKeepTheExistingOrdinals",
+      "area": "menu",
+      "type": "unit",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorPickedOnlyUsesPickedChest",
+      "area": "loot_generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorPickedOnlyWithNothingPicked",
+      "area": "loot_generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
+    },
+    {
+      "id": "gametest.lootGeneratorPickedSelectionRules",
+      "area": "loot_generator",
+      "type": "gametest",
+      "status": "pass",
+      "notes": ""
     }
   ]
 }

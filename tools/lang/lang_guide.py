@@ -93,6 +93,14 @@ CHAPTERS = [
           "na máquina só é usado se aquela face estiver como **Alvo de Itens**, então o loot nunca vai para uma bateria "
           "atrás da face de energia.",
           title=("Finding inventories", "Encontrando inventários")),
+        P("By default loot goes to **every** inventory in range. To choose, open the **Inventory Scan** tab and switch "
+          "the button from **All in range** to **Picked only**, then click the inventories you want: a tick marks "
+          "them. Hover a row to see its position.\n\nNew chests placed later are not used until you pick them.",
+          "Por padrão o loot vai para **todos** os inventários no alcance. Para escolher, abra a aba **Varredura de "
+          "Inventários**, troque o botão de **Todos no alcance** para **Só os escolhidos** e clique nos inventários "
+          "que quiser: eles ficam marcados. Passe o mouse numa linha para ver a posição.\n\nBaús colocados depois só "
+          "são usados quando você os escolher.",
+          title=("Choosing the chests", "Escolhendo os baús")),
         P("Before paying, the machine **simulates** the whole delivery. Items are spread round robin across targets. "
           "Only when everything fits is the loot inserted and the FE paid. If not, nothing is generated, nothing is "
           "consumed and the status says **Inventories are full**.\n\nNothing is ever lost or duplicated.",
@@ -341,11 +349,12 @@ CHAPTERS = [
           "A máquina volta sozinha quando a causa some.",
           title=("Amber statuses", "Status âmbar")),
         P("Red (your action):\n- **No inventories in range**: place a chest in range or set a face to Item Target\n"
+          "- **No inventory picked**: tick one in the Inventory Scan tab\n"
           "- **Profile needs a higher tier**: upgrade the machine\n- **Cost exceeds XP tank**: remove the Quantity Card\n"
           "- **No loot table for this mob**: the tooltip says why (usually a datapack names a missing table)\n"
           "- **This mob cannot be simulated**: use another mob",
           "Vermelho (sua ação):\n- **Nenhum inventário no alcance**: ponha um baú no alcance ou defina uma face como Alvo "
-          "de Itens\n- **Perfil exige tier maior**: suba o tier da máquina\n- **Custo excede o tanque de XP**: remova o "
+          "de Itens\n- **Nenhum inventário escolhido**: marque um na aba Varredura\n- **Perfil exige tier maior**: suba o tier da máquina\n- **Custo excede o tanque de XP**: remova o "
           "Cartão de Quantidade\n- **Sem tabela de loot para este mob**: a descrição diz o motivo (normalmente um datapack "
           "aponta uma tabela que não existe)\n- **Este mob não pode ser simulado**: use outro mob",
           title=("Red statuses", "Status vermelhos")),

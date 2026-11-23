@@ -13,7 +13,20 @@ public enum MachineAction {
     /** a = target mode ordinal (Loot Generator). */
     SET_TARGET_MODE,
     /** Rescan nearby inventories now (Loot Generator). */
-    RESCAN;
+    RESCAN,
+    /** a = 1 for "Picked only", 0 for every inventory in range (Loot Generator). */
+    SET_PICKED_ONLY,
+    /** Pick / unpick the scanned inventory at {@code BlockPos.of(((long) a << 32) | (b & 0xFFFFFFFFL))} (Loot Generator). */
+    TOGGLE_PICKED;
+
+    /** Splits a packed {@code BlockPos} into the two int arguments of an action. */
+    public static int[] packPos(long pos) {
+        return new int[] {(int) (pos >>> 32), (int) pos};
+    }
+
+    public static long unpackPos(int a, int b) {
+        return ((long) a << 32) | (b & 0xFFFFFFFFL);
+    }
 
     public static MachineAction byOrdinal(int ordinal) {
         MachineAction[] values = values();
